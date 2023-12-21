@@ -1,0 +1,5 @@
+# Analysis log files
+*.log
+
+#Jupyter notebook files
+*.ipynb_checkpoints
