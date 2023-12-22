@@ -44,3 +44,45 @@ def read_cancer_data(file='main'):
         raise ValueError(f"Unsupported file keyword: {file}")
         
     return data
+
+
+def select_month(df, month_str):
+    """
+    Returns a subset of a DataFrame based on the specified month.
+
+    Parameters:
+    - df (pandas.DataFrame): The DataFrame containing the data.
+    - month_str (str): A string representing the month
+    Returns:
+    - pandas.DataFrame: A subset of the input DataFrame containing only
+        rows corresponding to the specified month.
+
+    Raises:
+    - ValueError: If the specified month abbreviation is not valid.
+
+    Example:
+    >>> data = pd.DataFrame({'MONTH': ['JAN', 'FEB', 'MAR', 'APR', 'MAY'],
+    ...                      'Value': [10, 15, 20, 25, 30]})
+    >>> selected_data = select_month(data, 'mar')
+    >>> print(selected_data)
+      MONTH  Value
+    2   MAR     20
+    """
+    # List of valid month abbreviations
+    month_list = ['APR', 'MAY', 'JUN', 'JUL',
+                  'AUG', 'SEP', 'OCT', 'NOV',
+                  'DEC', 'JAN', 'FEB', 'MAR']
+
+    # Convert input month string to uppercase and use the first three characters
+    month_str = month_str[:3].upper()
+
+    # Check if the specified month is valid
+    if month_str in month_list:
+        # Select rows corresponding to the specified month
+        df_month = df.loc[df.MONTH == month_str]
+        return df_month
+    else:
+        # Raise an error for invalid month abbreviation
+        raise ValueError("Invalid month abbreviation. Please enter a valid three-letter month abbreviation.")
+
+    
