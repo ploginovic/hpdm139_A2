@@ -85,4 +85,17 @@ def select_month(df, month_str):
         # Raise an error for invalid month abbreviation
         raise ValueError("Invalid month abbreviation. Please enter a valid three-letter month abbreviation.")
 
+def nhs_code_link():
     
+    """This function reads a link file between the 'ORG CODE' and NHS Trust name
+    Based on NHS Digital data provided here: https://odsdatapoint.digital.nhs.uk/predefined
+    """
+    
+    link_data = (pd
+                 .read_csv("data/ods_data/geographic_etr.csv")
+                 .loc[:,
+                      ['Organisation Code', 'Name','National Grouping',
+                       'Higher Level Health Geography', 'Postcode']]
+                 .rename({'Organisation Code': 'ORG CODE'}, axis=1, ))
+    
+    return link_data
