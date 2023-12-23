@@ -99,3 +99,25 @@ def nhs_code_link():
                  .rename({'Organisation Code': 'ORG CODE'}, axis=1, ))
     
     return link_data
+
+
+#Unfinished DOCSTRING
+def select_org(df, org_str):
+    """
+    Pretty much the same as select_month()
+    """
+    # List of valid organisation codes from the 
+    link_data = nhs_code_link()
+    valid_org = list(set(df['ORG CODE']) & set(link_data['ORG CODE']))
+
+    # Convert input month string to uppercase and use the first three characters
+    org_code = org_str[:3].upper()
+
+    # Check if the specified month is valid
+    if org_code in valid_org:
+        # Select rows corresponding to the specified month
+        df_org = df.loc[df['ORG CODE'] == org_code]
+        return df_org
+    else:
+        # Raise an error for invalid month abbreviation
+        raise ValueError("Organisation not found. Suggest exploring organisation table.")
