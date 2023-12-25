@@ -121,3 +121,92 @@ def select_org(df, org_str):
     else:
         # Raise an error for invalid month abbreviation
         raise ValueError("Organisation not found. Suggest exploring organisation table.")
+        
+        
+def help_with(topic=None):
+    """
+    Provide information and help related to cancer data.
+
+    Parameters:
+    - topic (str): The topic you need help with. Options are 'standards', 'cancers', 'orgs', 'stage'.
+      If not provided, the function will prompt the user to select a topic.
+
+    Returns:
+    None
+
+    Example:
+    >>> help_with('cancers')
+    """
+
+    fds_description = ("1. The 28-day Faster Diagnosis Standard (FDS).\n"
+                       + "The standard: People should have cancer "
+                       + "ruled out or receive a diagnosis within 28 days\n"
+                       + "NHS target: 75% of people should meet this standard\n\n")
+
+    dtt_description = ("2. 31-day decision to treat to treatment standard (DTT).\n"
+                       + "The standard: Treatment should begin within a month (31 days)"
+                       + "of deciding to treat their cancer.\n"
+                       + "NHS target: 96% of people should meet this standard\n\n")
+
+    rtt_description = ("3.62-day referral to treatment standard\n"
+                       + "The standard: Treatment should begin within"
+                       + "two months (62 days) of an urgent referral.\n"
+                       + "NHS target: 85% of people should meet this standard\n\n")
+
+    cancer_uk_standards = ('https://news.cancerresearchuk.org/'
+                          + '2023/08/17/breaking-down-nhs-englands-'
+                          + 'changes-in-standards-for-cancer-care/')
+
+    cancer_types_info = ("Cancer Types Information:\n"
+                         + "1. Exhibited (non-cancer) breast symptoms - cancer not initially suspected\n"
+                         + "2. Missing or Invalid\n"
+                         + "3. Suspected breast cancer\n"
+                         + "4. Suspected gynaecological cancer\n"
+                         + "5. ... (and so on)\n")
+
+    selection_dict = {1: "standards", 2: 'cancers', 3: 'orgs', 4: 'stage'}
+
+    if topic is None:
+        print("Please select which aspect of the data you need help with:" + "\n"
+              + "1.) NHS Cancer standards" + "\n"
+              + "2.) Types of cancer" + "\n"
+              + "3.) NHS Organisation Codes" + "\n"
+              + "4.) Stage/Route")
+        select_topic = int(input("Select the number of a topic from above: \n\n"))
+        topic = selection_dict[select_topic]
+
+    if topic.lower() == 'standards':
+        print("There are three standards present in this dataset:\n",
+              fds_description,
+              dtt_description,
+              rtt_description,
+              '\n', 'Further info at: ', cancer_uk_standards)
+
+    elif topic.lower() == 'cancers':
+        print(cancer_types_info)
+
+    # Add additional conditions for other topics (orgs, stage) as needed
+
+def select_cancer(df, cancer_type):
+    
+    cancer_col_name ='CANCER TYPE'
+    cancer_type_dict = ({i + 1: cancer_type for i, cancer_type
+                         in enumerate(df[cancer_col_name].unique())})
+    
+    if cancer_type in cancer_type_dict.keys():
+        print(f"Selected {cancer_type_dict[cancer_type]}")
+        df = df.loc[df[cancer_col_name]==cancer_type_dict[cancer_type]]
+    else:
+        raise ValueError("Incorrect cancer type entered")
+    return df
+    
+def select_standard(df, standard='RTT'):
+    
+    standards_dict = {'FDS':'28-day FDS', 'DTT':'31-day Combined', "RTT":'62-day Combined'}
+    
+    if standard in standards_dict.keys():
+        df = df.loc[df['STANDARD']==standards_dict[standard]]
+    else:
+        raise ValueError("See help_with(standards) or help(select_standard)")
+    return df
+    
