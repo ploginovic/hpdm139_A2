@@ -85,21 +85,6 @@ def select_month(df, month_str):
         # Raise an error for invalid month abbreviation
         raise ValueError("Invalid month abbreviation. Please enter a valid three-letter month abbreviation.")
 
-def nhs_code_link():
-    
-    """This function reads a link file between the 'ORG CODE' and NHS Trust name
-    Based on NHS Digital data provided here: https://odsdatapoint.digital.nhs.uk/predefined
-    """
-    
-    link_data = (pd
-                 .read_csv("data/ods_data/geographic_etr.csv")
-                 .loc[:,
-                      ['Organisation Code', 'Name','National Grouping',
-                       'Higher Level Health Geography', 'Postcode']]
-                 .rename({'Organisation Code': 'ORG CODE'}, axis=1, ))
-    
-    return link_data
-
 
 #Unfinished DOCSTRING
 def select_org(df, org_str):
@@ -122,7 +107,45 @@ def select_org(df, org_str):
         # Raise an error for invalid month abbreviation
         raise ValueError("Organisation not found. Suggest exploring organisation table.")
         
+def select_cancer(df, cancer_type):
+    
+    cancer_col_name ='CANCER TYPE'
+    cancer_type_dict = ({i + 1: cancer_type for i, cancer_type
+                         in enumerate(df[cancer_col_name].unique())})
+    
+    if cancer_type in cancer_type_dict.keys():
+        print(f"Selected {cancer_type_dict[cancer_type]}")
+        df = df.loc[df[cancer_col_name]==cancer_type_dict[cancer_type]]
+    else:
+        raise ValueError("Incorrect cancer type entered")
+    return df
+    
+def select_standard(df, standard='RTT'):
+    
+    standards_dict = {'FDS':'28-day FDS', 'DTT':'31-day Combined', "RTT":'62-day Combined'}
+    
+    if standard in standards_dict.keys():
+        df = df.loc[df['STANDARD']==standards_dict[standard]]
+    else:
+        raise ValueError("See help_with(standards) or help(select_standard)")
+    return df
         
+
+def nhs_code_link():
+    
+    """This function reads a link file between the 'ORG CODE' and NHS Trust name
+    Based on NHS Digital data provided here: https://odsdatapoint.digital.nhs.uk/predefined
+    """
+    
+    link_data = (pd
+                 .read_csv("data/ods_data/geographic_etr.csv")
+                 .loc[:,
+                      ['Organisation Code', 'Name','National Grouping',
+                       'Higher Level Health Geography', 'Postcode']]
+                 .rename({'Organisation Code': 'ORG CODE'}, axis=1, ))
+    
+    return link_data
+
 def help_with(topic=None):
     """
     Provide information and help related to cancer data.
@@ -187,26 +210,72 @@ def help_with(topic=None):
 
     # Add additional conditions for other topics (orgs, stage) as needed
 
-def select_cancer(df, cancer_type):
-    
-    cancer_col_name ='CANCER TYPE'
-    cancer_type_dict = ({i + 1: cancer_type for i, cancer_type
-                         in enumerate(df[cancer_col_name].unique())})
-    
-    if cancer_type in cancer_type_dict.keys():
-        print(f"Selected {cancer_type_dict[cancer_type]}")
-        df = df.loc[df[cancer_col_name]==cancer_type_dict[cancer_type]]
-    else:
-        raise ValueError("Incorrect cancer type entered")
+def select_data(df, filters):
+    """
+    Returns a subset of a DataFrame based on the specified filters.
+
+    Parameters:
+    - df (pandas.DataFrame): The DataFrame containing the data.
+    - filters (list of tuples): List of tuples where each tuple contains a filter type and value.
+
+    Returns:
+    - pandas.DataFrame: A subset of the input DataFrame containing only
+        rows corresponding to the specified filters.
+
+    Raises:
+    - ValueError: If any specified filter type or value is not valid.
+
+    Example:
+    >>> data = pd.DataFrame({'MONTH': ['JAN', 'FEB', 'MAR', 'APR', 'MAY'],
+    ...                      'ORG CODE': ['R1K', 'R1K', 'R2K', 'R2K', 'R3K'],
+    ...                      'CANCER TYPE': ['Breast', 'Lung', 'Breast', 'Lung', 'Breast'],
+    ...                      'STANDARD': ['28-day FDS', '31-day Combined', '62-day Combined', '28-day FDS', '31-day Combined'],
+    ...                      'Value': [10, 15, 20, 25, 30]})
+    >>> selected_data = select_data(data, [('month', 'mar'), ('org', 'r1k')])
+    >>> print(selected_data)
+      MONTH ORG CODE CANCER TYPE      STANDARD  Value
+    0   JAN      R1K      Breast      28-day FDS     10
+    1   FEB      R1K        Lung  31-day Combined     15
+    """
+    for filter_type, filter_value in filters:
+        if filter_type == 'month':
+            month_list = ['APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC', 'JAN', 'FEB', 'MAR']
+            filter_value = filter_value[:3].upper()
+
+            if filter_value not in month_list:
+                raise ValueError("Invalid month abbreviation. Please enter a valid three-letter month abbreviation.")
+
+            df = df.loc[df['MONTH'] == filter_value]
+
+        elif filter_type == 'org':
+            link_data = nhs_code_link()
+            valid_org = list(set(df['ORG CODE']) & set(link_data['ORG CODE']))
+            filter_value = filter_value[:3].upper()
+
+            if filter_value not in valid_org:
+                raise ValueError("Organisation not found. Suggest exploring organisation table.")
+
+            df = df.loc[df['ORG CODE'] == filter_value]
+
+        elif filter_type == 'cancer':
+            cancer_col_name = 'CANCER TYPE'
+            cancer_type_dict = {i + 1: cancer_type for i, cancer_type in enumerate(df[cancer_col_name].unique())}
+
+            if filter_value not in cancer_type_dict.keys():
+                raise ValueError("Incorrect cancer type entered")
+
+            print(f"Selected {cancer_type_dict[filter_value]}")
+            df = df.loc[df[cancer_col_name] == cancer_type_dict[filter_value]]
+
+        elif filter_type == 'standard':
+            standards_dict = {'FDS': '28-day FDS', 'DTT': '31-day Combined', "RTT": '62-day Combined'}
+
+            if filter_value not in standards_dict.keys():
+                raise ValueError("See help_with(standards) or help(select_standard)")
+
+            df = df.loc[df['STANDARD'] == standards_dict[filter_value]]
+
+        else:
+            raise ValueError("Invalid filter type. Please choose 'month', 'org', 'cancer', or 'standard'.")
+
     return df
-    
-def select_standard(df, standard='RTT'):
-    
-    standards_dict = {'FDS':'28-day FDS', 'DTT':'31-day Combined', "RTT":'62-day Combined'}
-    
-    if standard in standards_dict.keys():
-        df = df.loc[df['STANDARD']==standards_dict[standard]]
-    else:
-        raise ValueError("See help_with(standards) or help(select_standard)")
-    return df
-    
