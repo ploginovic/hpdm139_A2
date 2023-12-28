@@ -36,5 +36,5 @@ def get_national_28_day_standard(national_data_link):
           )
     return df
 
-
+# this should be added to the main loop 
 national_28_day_standard = get_national_28_day_standard(national_data_link)
