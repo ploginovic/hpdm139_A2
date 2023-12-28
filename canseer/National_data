@@ -58,3 +58,6 @@ def get_national(national_data_link):
           .assign(Month=lambda x: pd.to_datetime(x['Month']))
           )
     return df
+
+# function in main will be 
+national = get_national(national_data_link)
