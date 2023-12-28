@@ -1,1 +1,40 @@
 
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+
+# Link for national data file
+national_data_link = r'https://www.england.nhs.uk/statistics/wp-content/' \
+    + 'uploads/sites/2/2023/12/' \
+    + 'CWT-CRS-National-Time-Series-Oct-2009-Oct-2023-with-Revisions.xlsx'
+
+
+def get_national_28_day_standard(national_data_link):
+    """
+    Parameters
+    ----------
+    national_data_link : string of URL link to national cancer data frame
+
+    Returns
+    -------
+    df : Data frame of national 28 day standard cancer data
+    This contains columns Monthly assigned to datatime64, and Total,
+    Within standard and Outside Standard assigned to int32 types
+
+    """
+    df = (pd.read_excel(national_data_link,
+                        sheet_name="Monthly Performance",
+                        skiprows=range(0, 3),
+                        usecols=['Monthly',
+                                 'Total',
+                                 'Within Standard',
+                                 'Outside Standard'])
+          .astype({'Total': np.int32,
+                   'Within Standard': np.int32,
+                   'Outside Standard': np.int32})
+          .assign(Monthly=lambda x: pd.to_datetime(x['Monthly']))
+          )
+    return df
+
+
+national_28_day_standard = get_national_28_day_standard(national_data_link)
