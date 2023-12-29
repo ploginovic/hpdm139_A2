@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def read_cancer_data(file='main'):
@@ -37,6 +38,7 @@ def read_cancer_data(file='main'):
     link_keyword_dict = {'main': full_data_link,
                          'gdo': GDO_all}
     
+    
     # Read data based on the specified file keyword
     if file in link_keyword_dict:
         data = pd.read_excel(link_keyword_dict[file]) if file == 'main' else pd.read_csv(link_keyword_dict[file])
@@ -44,7 +46,62 @@ def read_cancer_data(file='main'):
         raise ValueError(f"Unsupported file keyword: {file}")
         
     return data
+#### NEED TO MAKE PEP8 COMPLIANT
+def rename_and_replace(df):
+    """
+    Rename specified columns and replace values in the 'CANCER_TYPE' column based on a predefined mapping.
 
+    Parameters:
+    - df (pd.DataFrame): The input DataFrame.
+
+    Returns:
+    - pd.DataFrame: DataFrame with specified column names renamed and values in the 'CANCER_TYPE' column replaced.
+    """
+
+    # Dictionary to map old column names to new column names
+    cols_to_rename = {'CANCER TYPE': 'CANCER_TYPE', 'ORG CODE': 'ORG_CODE'}
+
+    # Dictionary to map old values to new values in the 'CANCER_TYPE' column
+    values_to_change = {
+        "CANCER_TYPE": {
+            'Exhibited (non-cancer) breast symptoms - cancer not initially suspected': 'Unsuspected_breast_ca',
+            'Missing or Invalid': 'Invalid',
+            'Suspected breast cancer': 'Suspected_breast_ca',
+            'Suspected gynaecological cancer': 'Suspected_gynecological_ca',
+            'Suspected lower gastrointestinal cancer': 'Suspected_lower_GI_ca',
+            'Suspected acute leukaemia': 'Suspected_acute_leukaemia',
+            'Suspected brain/central nervous system tumours': 'Suspected_brain_CNS_tumors',
+            "Suspected children's cancer": 'Suspected_children_cancer',
+            'Suspected haematological malignancies (excluding acute leukaemia)': 'Suspected_hematological_malignancies',
+            'Suspected head & neck cancer': 'Suspected_head_neck_ca',
+            'Suspected lung cancer': 'Suspected_lung_ca',
+            'Suspected other cancer': 'Suspected_other_ca',
+            'Suspected sarcoma': 'Suspected_sarcoma',
+            'Suspected skin cancer': 'Suspected_skin_ca',
+            'Suspected testicular cancer': 'Suspected_testicular_ca',
+            'Suspected upper gastrointestinal cancer': 'Suspected_upper_GI_ca',
+            'Suspected urological malignancies (excluding testicular)': 'Suspected_urological_malignancies',
+            'Breast': 'Breast',
+            'Gynaecological': 'Gynecological',
+            'Haematological': 'Hematological',
+            'Head & Neck': 'Head_Neck',
+            'Lower Gastrointestinal': 'Lower_GI',
+            'Lung': 'Lung',
+            'Other (a)': 'Other',
+            'Skin': 'Skin',
+            'Upper Gastrointestinal': 'Upper_GI',
+            'Urological': 'Urological',
+            'ALL CANCERS': 'All_Cancers'
+        }
+    }
+
+    # Rename specified columns
+    df.rename(columns=cols_to_rename, inplace=True)
+
+    # Replace values in the 'CANCER_TYPE' column
+    df['CANCER_TYPE'] = df['CANCER_TYPE'].map(values_to_change['CANCER_TYPE'])
+
+    return df
 
 def select_month(df, month_str):
     """
@@ -93,7 +150,7 @@ def select_org(df, org_str):
     """
     # List of valid organisation codes from the 
     link_data = nhs_code_link()
-    valid_org = list(set(df['ORG CODE']) & set(link_data['ORG CODE']))
+    valid_org = list(set(df['ORG_CODE']) & set(link_data['ORG_CODE']))
 
     # Convert input month string to uppercase and use the first three characters
     org_code = org_str[:3].upper()
@@ -101,7 +158,7 @@ def select_org(df, org_str):
     # Check if the specified month is valid
     if org_code in valid_org:
         # Select rows corresponding to the specified month
-        df_org = df.loc[df['ORG CODE'] == org_code]
+        df_org = df.loc[df['ORG_CODE'] == org_code]
         return df_org
     else:
         # Raise an error for invalid month abbreviation
@@ -109,7 +166,7 @@ def select_org(df, org_str):
         
 def select_cancer(df, cancer_type):
     
-    cancer_col_name ='CANCER TYPE'
+    cancer_col_name ='CANCER_TYPE'
     cancer_type_dict = ({i + 1: cancer_type for i, cancer_type
                          in enumerate(df[cancer_col_name].unique())})
     
@@ -133,7 +190,7 @@ def select_standard(df, standard='RTT'):
 
 def nhs_code_link():
     
-    """This function reads a link file between the 'ORG CODE' and NHS Trust name
+    """This function reads a link file between the 'ORG_CODE' and NHS Trust name
     Based on NHS Digital data provided here: https://odsdatapoint.digital.nhs.uk/predefined
     """
     
@@ -142,7 +199,7 @@ def nhs_code_link():
                  .loc[:,
                       ['Organisation Code', 'Name','National Grouping',
                        'Higher Level Health Geography', 'Postcode']]
-                 .rename({'Organisation Code': 'ORG CODE'}, axis=1, ))
+                 .rename({'Organisation Code': 'ORG_CODE'}, axis=1, ))
     
     return link_data
 
@@ -227,13 +284,13 @@ def select_data(df, filters):
 
     Example:
     >>> data = pd.DataFrame({'MONTH': ['JAN', 'FEB', 'MAR', 'APR', 'MAY'],
-    ...                      'ORG CODE': ['R1K', 'R1K', 'R2K', 'R2K', 'R3K'],
-    ...                      'CANCER TYPE': ['Breast', 'Lung', 'Breast', 'Lung', 'Breast'],
+    ...                      'ORG_CODE': ['R1K', 'R1K', 'R2K', 'R2K', 'R3K'],
+    ...                      'CANCER_TYPE': ['Breast', 'Lung', 'Breast', 'Lung', 'Breast'],
     ...                      'STANDARD': ['28-day FDS', '31-day Combined', '62-day Combined', '28-day FDS', '31-day Combined'],
     ...                      'Value': [10, 15, 20, 25, 30]})
     >>> selected_data = select_data(data, [('month', 'mar'), ('org', 'r1k')])
     >>> print(selected_data)
-      MONTH ORG CODE CANCER TYPE      STANDARD  Value
+      MONTH ORG_CODE CANCER_TYPE      STANDARD  Value
     0   JAN      R1K      Breast      28-day FDS     10
     1   FEB      R1K        Lung  31-day Combined     15
     """
@@ -249,20 +306,20 @@ def select_data(df, filters):
 
         elif filter_type == 'org':
             link_data = nhs_code_link()
-            valid_org = list(set(df['ORG CODE']) & set(link_data['ORG CODE']))
+            valid_org = list(set(df['ORG_CODE']) & set(link_data['ORG_CODE']))
             filter_value = filter_value[:3].upper()
 
             if filter_value not in valid_org:
                 raise ValueError("Organisation not found. Suggest exploring organisation table.")
 
-            df = df.loc[df['ORG CODE'] == filter_value]
+            df = df.loc[df['ORG_CODE'] == filter_value]
 
         elif filter_type == 'cancer':
-            cancer_col_name = 'CANCER TYPE'
+            cancer_col_name = 'CANCER_TYPE'
             cancer_type_dict = {i + 1: cancer_type for i, cancer_type in enumerate(df[cancer_col_name].unique())}
 
             if filter_value not in cancer_type_dict.keys():
-                raise ValueError("Incorrect cancer type entered")
+                raise ValueError("Incorrect CANCER_TYPE entered")
 
             print(f"Selected {cancer_type_dict[filter_value]}")
             df = df.loc[df[cancer_col_name] == cancer_type_dict[filter_value]]
@@ -278,4 +335,71 @@ def select_data(df, filters):
         else:
             raise ValueError("Invalid filter type. Please choose 'month', 'org', 'cancer', or 'standard'.")
 
+    return df
+
+def proportion_breaches(df, window_size=3):
+    # Calculate the proportion of breaches
+    df['PROPORTION_BREACHES'] = df['BREACHES'] / df['TOTAL']
+
+# Create a sliding window to calculate the moving average of the proportion of breaches
+    df['MOVING_AVERAGE'] = df['PROPORTION_BREACHES'].rolling(window=window_size).mean()
+    
+    return df
+
+################################## NATIONAL DATA #################################
+
+# Link for national data file perhaps should be stored elsewhere 
+national_data_link = r'https://www.england.nhs.uk/statistics/wp-content/' \
+    + 'uploads/sites/2/2023/12/' \
+    + 'CWT-CRS-National-Time-Series-Oct-2009-Oct-2023-with-Revisions.xlsx'
+
+
+def get_national(national_data_link=national_data_link):
+    """
+    Parameters
+    ----------
+    national_data_link : string of URL link to national cancer data frame
+
+    Returns
+    -------
+    df : Data frame of national 28 day and 31 day standards
+    """
+    # dictionary of column names
+    column_names = {'Monthly': 'Month',
+                    'Total': 'Total_28',
+                    'Within Standard': 'Within Standard_28',
+                    'Outside Standard': 'Outside Standard_28',
+                    'Total.1': 'Total_31',
+                    'Within Standard.1': 'Within Standard_31',
+                    'Outside Standard.1': 'Outside Standard_31'}
+    # dictionary to recode NaN values as 0
+    recoding = {'Total_31': 0,
+                'Within Standard_31': 0,
+                'Outside Standard_31': 0}
+    # read the excel file, including specific columns required
+    df = (pd.read_excel(national_data_link,
+                        sheet_name="Monthly Performance",
+                        skiprows=range(0, 3),
+                        usecols=['Monthly',
+                                 'Total',
+                                 'Within Standard',
+                                 'Outside Standard',
+                                 'Total.1',
+                                 'Within Standard.1',
+                                 'Outside Standard.1'])
+          # rename columns
+          .rename(columns=column_names)
+          # fill in NaN values as 0
+          .fillna(value=recoding)
+          # asign interger values to the columns
+          .astype({
+              'Total_28': np.int32,
+              'Within Standard_28': np.int32,
+              'Outside Standard_28': np.int32,
+              'Total_31': np.int32,
+              'Within Standard_31': np.int32,
+              'Outside Standard_31': np.int32})
+          # make month a time value
+          .assign(Month=lambda x: pd.to_datetime(x['Month']))
+          )
     return df
