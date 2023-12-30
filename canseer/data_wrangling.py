@@ -2,6 +2,49 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+def get_provider(data_link):
+    """
+    Parameters
+    ----------
+    national_data_link : string of URL link to national cancer data frame
+
+    Returns
+    -------
+    df : Data frame of national 28 day standard cancer data
+    This contains columns Monthly assigned to datatime64, and Total,
+    Within standard and Outside Standard assigned to int32 types
+
+    """
+    # Dictionary to map old column names to new column names
+    rename_cols = {'PERIOD' :'Month',
+                   'STANDARD': 'Standard',
+                   'ORG CODE': 'Org_Code',
+                     'TOTAL': 'Total', 
+                   'CANCER TYPE': 'Cancer_Type', 
+                'TREATMENT MODALITY': 'Treatment_Modality',
+                'WITHIN STANDARD': 'Within_Standard',
+                   'BREACHES':'Breaches'}
+        
+    df = (pd.read_excel(data_link,
+                        usecols=['PERIOD',
+                                 'STANDARD',
+                                 'ORG CODE',
+                                 'TREATMENT MODALITY',
+                                 'CANCER TYPE',
+                                 'TOTAL',
+                                 'WITHIN STANDARD',
+                                'BREACHES'])
+          .rename(columns=rename_cols)
+          .astype({
+              'Total': np.int32,
+              'Within_Standard': np.int32,
+              'Breaches': np.int32})
+          .assign(Standard =lambda x: pd.Categorical(x['Standard']),
+                  Cancer_Type =lambda x: pd.Categorical(x['Cancer_Type']),
+                  Treatment_Modality=lambda x: pd.Categorical(x['Treatment_Modality']),
+                  Org_Code=lambda x: pd.Categorical(x['Org_Code']))
+                 )
+    return df
 
 def read_cancer_data(file='main'):
     """
