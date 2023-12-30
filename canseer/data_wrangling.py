@@ -6,13 +6,12 @@ def get_provider(data_link):
     """
     Parameters
     ----------
-    national_data_link : string of URL link to national cancer data frame
+    data_link : string of URL link to provider cancer data frame
 
     Returns
     -------
-    df : Data frame of national 28 day standard cancer data
-    This contains columns Monthly assigned to datatime64, and Total,
-    Within standard and Outside Standard assigned to int32 types
+    df : Data frame for provider standards for each area represented by the 
+    organisation code.
 
     """
     # Dictionary to map old column names to new column names
