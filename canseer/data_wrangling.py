@@ -1,111 +1,42 @@
+# Needs to be kept elsewhere 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-def get_provider(data_link):
+# Constant think we should store these elsewhere with a description of the data source 
+provider_data_link = r'https://www.england.nhs.uk/statistics/wp-content/' \
+    + 'uploads/sites/2/2023/12/' \
+    + 'CWT-CRS-2022-23-Data-Extract-Provider-Final.xlsx'
+
+national_data_link = r'https://www.england.nhs.uk/statistics/wp-content/' \
+                     + 'uploads/sites/2/2023/12/' \
+                     + 'CWT-CRS-National-Time-Series-Oct-2009-Oct-2023-with-Revisions.xlsx'
+
+def get_provider(provider_data_link):
     """
     Parameters
     ----------
-    data_link : string of URL link to provider cancer data frame
+    provider_data_link : string of URL link to provider cancer data frame
 
     Returns
     -------
-    df : Data frame for provider standards for each area represented by the 
+    df : Data frame for provider standards for each area represented by the
     organisation code.
 
     """
     # Dictionary to map old column names to new column names
-    rename_cols = {'PERIOD' :'Month',
+    rename_cols = {'PERIOD': 'Month',
                    'STANDARD': 'Standard',
                    'ORG CODE': 'Org_Code',
-                     'TOTAL': 'Total', 
-                   'CANCER TYPE': 'Cancer_Type', 
-                'TREATMENT MODALITY': 'Treatment_Modality',
-                'WITHIN STANDARD': 'Within_Standard',
-                   'BREACHES':'Breaches'}
-        
-    df = (pd.read_excel(data_link,
-                        usecols=['PERIOD',
-                                 'STANDARD',
-                                 'ORG CODE',
-                                 'TREATMENT MODALITY',
-                                 'CANCER TYPE',
-                                 'TOTAL',
-                                 'WITHIN STANDARD',
-                                'BREACHES'])
-          .rename(columns=rename_cols)
-          .astype({
-              'Total': np.int32,
-              'Within_Standard': np.int32,
-              'Breaches': np.int32})
-          .assign(Standard =lambda x: pd.Categorical(x['Standard']),
-                  Cancer_Type =lambda x: pd.Categorical(x['Cancer_Type']),
-                  Treatment_Modality=lambda x: pd.Categorical(x['Treatment_Modality']),
-                  Org_Code=lambda x: pd.Categorical(x['Org_Code']))
-                 )
-    return df
+                   'TOTAL': 'Total',
+                   'CANCER TYPE': 'Cancer_Type',
+                   'TREATMENT MODALITY': 'Treatment_Modality',
+                   'WITHIN STANDARD': 'Within_Standard',
+                   'BREACHES': 'Breaches'}
 
-def read_cancer_data(file='main'):
-    """
-    Reads cancer data from an Excel file or a CSV file based on the specified keyword.
-
-    Parameters:
-    - file (str): Keyword specifying the type of cancer data to be read.
-      Available options:
-        - 'main': Reads data from the NHS England Excel file.
-        - 'gdo': Reads data from the Get Data Out (GDO) CSV file.
-      Default is 'main'.
-
-    Returns:
-    - pandas.DataFrame: A DataFrame containing the cancer data.
-
-    Raises:
-    - ValueError: If the specified file keyword is not recognized.
-
-    Examples:
-    >>> main_data = read_cancer_data('main')
-    >>> gdo_data = read_cancer_data('gdo')
-    """
-    
-    # URLs for the data sources
-    full_data_link = ('https://www.england.nhs.uk/'
-                      + 'statistics/wp-content/uploads/'
-                      + 'sites/2/2023/12/'
-                      + 'CWT-CRS-2022-23-Data-Extract-Provider-Final.xlsx')
-    
-    GDO_all = ("https://www.cancerdata.nhs.uk/"
-               + "getdataout/GDO_data_wide.csv")
-    
-    # Dictionary mapping keywords to data source URLs
-    link_keyword_dict = {'main': full_data_link,
-                         'gdo': GDO_all}
-    
-    
-    # Read data based on the specified file keyword
-    if file in link_keyword_dict:
-        data = pd.read_excel(link_keyword_dict[file]) if file == 'main' else pd.read_csv(link_keyword_dict[file])
-    else:
-        raise ValueError(f"Unsupported file keyword: {file}")
-        
-    return data
-#### NEED TO MAKE PEP8 COMPLIANT
-def rename_and_replace(df):
-    """
-    Rename specified columns and replace values in the 'CANCER_TYPE' column based on a predefined mapping.
-
-    Parameters:
-    - df (pd.DataFrame): The input DataFrame.
-
-    Returns:
-    - pd.DataFrame: DataFrame with specified column names renamed and values in the 'CANCER_TYPE' column replaced.
-    """
-
-    # Dictionary to map old column names to new column names
-    cols_to_rename = {'CANCER TYPE': 'CANCER_TYPE', 'ORG CODE': 'ORG_CODE'}
-
-    # Dictionary to map old values to new values in the 'CANCER_TYPE' column
-    values_to_change = {
-        "CANCER_TYPE": {
+    # Dictionary to rename values  in the 'CANCER_TYPE' column
+    cancer_type_change = {
+        "Cancer_Type": {
             'Exhibited (non-cancer) breast symptoms - cancer not initially suspected': 'Unsuspected_breast_ca',
             'Missing or Invalid': 'Invalid',
             'Suspected breast cancer': 'Suspected_breast_ca',
@@ -136,14 +67,99 @@ def rename_and_replace(df):
             'ALL CANCERS': 'All_Cancers'
         }
     }
-
-    # Rename specified columns
-    df.rename(columns=cols_to_rename, inplace=True)
-
-    # Replace values in the 'CANCER_TYPE' column
-    df['CANCER_TYPE'] = df['CANCER_TYPE'].map(values_to_change['CANCER_TYPE'])
-
+    # read data from excel stating which columns to use, rename columns and
+    # assign variable types
+    df = (pd.read_excel(provider_data_link,
+                        usecols=['PERIOD',
+                                 'STANDARD',
+                                 'ORG CODE',
+                                 'TREATMENT MODALITY',
+                                 'CANCER TYPE',
+                                 'TOTAL',
+                                 'WITHIN STANDARD',
+                                 'BREACHES'])
+          .rename(columns=rename_cols)
+          .astype({
+              'Total': np.int32,
+              'Within_Standard': np.int32,
+              'Breaches': np.int32})
+          .assign(Standard=lambda x: pd.Categorical(x['Standard']),
+                  Cancer_Type=lambda x: pd.Categorical(x['Cancer_Type']),
+                  Treatment_Modality=lambda x: pd.Categorical(
+                      x['Treatment_Modality']),
+                  Org_Code=lambda x: pd.Categorical(x['Org_Code']),
+                  Month=lambda x: pd.to_datetime(x['Month']))
+          .replace(cancer_type_change)
+          )
     return df
+
+
+def get_national_28_day_standard(national_data_link):
+    """
+
+   Parameters
+    ----------
+    national_data_link : string of URL link to national cancer data
+
+    Returns
+    -------
+    Data frame of monthly performance, total referalls, number of breaches for
+    the 28 day cancer diagnosis standard and number within standard for each
+    Month.
+
+    """
+    # Dictionary of columns to rename
+    column_names = {'Monthly': 'Month',
+                    'Outside Standard': 'Breaches',
+                    'Within Standard': 'Within_Standard'}
+# read the excel file, including specific sheet number and columns required,
+# assigns variable types and renames columns.
+    df = (pd.read_excel(national_data_link,
+                        sheet_name="Monthly Performance",
+                        skiprows=range(0, 3),
+                        usecols=['Monthly',
+                                 'Total',
+                                 'Within Standard',
+                                 'Outside Standard',])
+          .astype({'Total': np.int32,
+                   'Within Standard': np.int32,
+                   'Outside Standard': np.int32})
+          .rename(columns=column_names)
+          .assign(Month=lambda x: pd.to_datetime(x['Month']))
+          )
+    # Add extra columns, Org code, Standard and Cancer_Type so details clear
+    # if appended to provider data frame.
+    df['Org_Code'] = 'NAT'
+    df['Standard'] = '28-day FDS'
+    df['Cancer_Type'] = 'ALL - National Data'
+    df['Treatment_Modality'] = 'Not applicable 28 day standard'
+    df = df.assign(Org_Code=lambda x: pd.Categorical(x['Org_Code']),
+                   Standard=lambda x: pd.Categorical(x['Standard']),
+                   Cancer_Type=lambda x: pd.Categorical(x['Cancer_Type']),
+                   Treatment_Modality=lambda x: pd.Categorical(
+                       x['Treatment_Modality'])
+                   )
+    return df
+
+# With the above functions you can then perform 
+new_df = provider_data._append(
+    get_national_28_day_standard(national_data_link))
+
+# Then you can filter the data set how you want if you also include NATand plot NAT as an area code fo
+
+
+
+
+### I think these filter and select functions need checking with the new column names, we also need a way of inputing user definined filtering 
+### and feeding back if there are no cases with selected cancer type
+## Just in case it helps this was my ad hoc method of filtering.
+
+Selected_Standard = ["28-day FDS"]
+df_stan = df_provider[df_provider['Standard'].isin(Selected_Standard)]
+Selected_Org_Code = ["R1K", "NAT"]
+df_stan_org = df_stan[df_stan['Org_Code'].isin(Selected_Org_Code)]
+Selected_Cancer_Type = ["Suspected breast cancer", 'ALL - National Data']
+df_stan_org_can_type = df_stan_org[df_stan_org["Cancer_Type"].isin(Selected_Cancer_Type)]
 
 def select_month(df, month_str):
     """
