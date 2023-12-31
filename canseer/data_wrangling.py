@@ -3,6 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+colname_org_code = "ORG_CODE"
+colname_ca_type = "CANCER_TYPE"
+
 def read_cancer_data(file='main'):
     """
     Reads cancer data from an Excel file or a CSV file based on the specified keyword.
@@ -64,34 +67,34 @@ def rename_and_replace(df):
     # Dictionary to map old values to new values in the 'CANCER_TYPE' column
     values_to_change = {
         "CANCER_TYPE": {
-            'Exhibited (non-cancer) breast symptoms - cancer not initially suspected': 'Unsuspected_breast_ca',
-            'Missing or Invalid': 'Invalid',
-            'Suspected breast cancer': 'Suspected_breast_ca',
-            'Suspected gynaecological cancer': 'Suspected_gynecological_ca',
-            'Suspected lower gastrointestinal cancer': 'Suspected_lower_GI_ca',
-            'Suspected acute leukaemia': 'Suspected_acute_leukaemia',
-            'Suspected brain/central nervous system tumours': 'Suspected_brain_CNS_tumors',
-            "Suspected children's cancer": 'Suspected_children_cancer',
-            'Suspected haematological malignancies (excluding acute leukaemia)': 'Suspected_hematological_malignancies',
-            'Suspected head & neck cancer': 'Suspected_head_neck_ca',
-            'Suspected lung cancer': 'Suspected_lung_ca',
-            'Suspected other cancer': 'Suspected_other_ca',
-            'Suspected sarcoma': 'Suspected_sarcoma',
-            'Suspected skin cancer': 'Suspected_skin_ca',
-            'Suspected testicular cancer': 'Suspected_testicular_ca',
-            'Suspected upper gastrointestinal cancer': 'Suspected_upper_GI_ca',
-            'Suspected urological malignancies (excluding testicular)': 'Suspected_urological_malignancies',
-            'Breast': 'Breast',
-            'Gynaecological': 'Gynecological',
-            'Haematological': 'Hematological',
-            'Head & Neck': 'Head_Neck',
-            'Lower Gastrointestinal': 'Lower_GI',
-            'Lung': 'Lung',
-            'Other (a)': 'Other',
-            'Skin': 'Skin',
-            'Upper Gastrointestinal': 'Upper_GI',
-            'Urological': 'Urological',
-            'ALL CANCERS': 'All_Cancers'
+            'Exhibited (non-cancer) breast symptoms - cancer not initially suspected': 'unsuspected_breast_ca',
+            'Missing or Invalid': 'invalid',
+            'Suspected breast cancer': 'suspected_breast_ca',
+            'Suspected gynaecological cancer': 'suspected_gynecological_ca',
+            'Suspected lower gastrointestinal cancer': 'suspected_lower_GI_ca',
+            'Suspected acute leukaemia': 'suspected_acute_leukaemia',
+            'Suspected brain/central nervous system tumours': 'suspected_brain_CNS_tumors',
+            "Suspected children's cancer": 'suspected_children_cancer',
+            'Suspected haematological malignancies (excluding acute leukaemia)': 'suspected_hematological_malignancies',
+            'Suspected head & neck cancer': 'suspected_head_neck_ca',
+            'Suspected lung cancer': 'suspected_lung_ca',
+            'Suspected other cancer': 'suspected_other_ca',
+            'Suspected sarcoma': 'suspected_sarcoma',
+            'Suspected skin cancer': 'suspected_skin_ca',
+            'Suspected testicular cancer': 'suspected_testicular_ca',
+            'Suspected upper gastrointestinal cancer': 'suspected_upper_GI_ca',
+            'Suspected urological malignancies (excluding testicular)': 'suspected_urological_ca',
+            'Breast': 'breast',
+            'Gynaecological': 'gynecological',
+            'Haematological': 'hematological',
+            'Head & Neck': 'head_Neck',
+            'Lower Gastrointestinal': 'lower_GI',
+            'Lung': 'lung',
+            'Other (a)': 'other',
+            'Skin': 'skin',
+            'Upper Gastrointestinal': 'upper_GI',
+            'Urological': 'urological',
+            'ALL CANCERS': 'all_Cancers'
         }
     }
 
