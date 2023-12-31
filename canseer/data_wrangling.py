@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 colname_org_code = "ORG_CODE"
-colname_ca_type = "CANCER_TYPE"
+cancer_col_name = "CANCER_TYPE"
 
 def read_cancer_data(file='main'):
     """
@@ -206,6 +206,27 @@ def nhs_code_link():
     
     return link_data
 
+
+def read_icb_sicb_coding():
+    """
+    Reads the Integrated Care Board (ICB) codes lookup file for Sub-ICB locations
+    in England from a CSV file and returns the DataFrame.
+
+    The CSV file contains information mapping Sub-ICB locations to Integrated Care Boards
+    in England as of July 2022.
+
+    Returns:
+    pd.DataFrame: A DataFrame containing the mapping of Sub-ICB locations to
+    Integrated Care Boards in England.
+    """
+    icb_path = ('data/ons_shapefile/Sub_ICB_Locations_to'
+                + '_Integrated_Care_Boards_to_NHS_England'
+                + '_(Region)_(July_2022)_Lookup_in_England.csv')
+    icb_codes = pd.read_csv(icb_path)
+    
+    return icb_codes
+
+
 def help_with(topic=None):
     """
     Provide information and help related to cancer data.
@@ -318,11 +339,11 @@ def select_data(df, filters):
             df = df.loc[df['ORG_CODE'] == filter_value]
 
         elif filter_type == 'cancer':
-            cancer_col_name = 'CANCER_TYPE'
+            cancer_col_name = "CANCER_TYPE"
             cancer_type_dict = {i + 1: cancer_type for i, cancer_type in enumerate(df[cancer_col_name].unique())}
 
             if filter_value not in cancer_type_dict.keys():
-                raise ValueError("Incorrect CANCER_TYPE entered")
+                raise ValueError("Incorrect 'cancer type' entered")
 
             print(f"Selected {cancer_type_dict[filter_value]}")
             df = df.loc[df[cancer_col_name] == cancer_type_dict[filter_value]]

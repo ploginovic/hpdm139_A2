@@ -67,8 +67,7 @@ def breaches_animated_plot(data, filters, window_size=5):
     """
 
     # Apply filters to the data
-    for filter_key, filter_value in filters:
-        data = select_data(data, filters)
+    data = select_data(data, filters)
 
     # Sort data by the 'PERIOD' column
     data.sort_values(by='PERIOD', inplace=True)
