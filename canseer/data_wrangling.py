@@ -1,110 +1,166 @@
+# Needs to be kept elsewhere 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Constant think we should store these elsewhere with a description of the data source 
+provider_data_link = r'https://www.england.nhs.uk/statistics/wp-content/' \
+    + 'uploads/sites/2/2023/12/' \
+    + 'CWT-CRS-2022-23-Data-Extract-Provider-Final.xlsx'
 
-colname_org_code = "ORG_CODE"
-cancer_col_name = "CANCER_TYPE"
+national_data_link = r'https://www.england.nhs.uk/statistics/wp-content/' \
+                     + 'uploads/sites/2/2023/12/' \
+                     + 'CWT-CRS-National-Time-Series-Oct-2009-Oct-2023-with-Revisions.xlsx'
 
-def read_cancer_data(file='main'):
+
+def get_provider(provider_data_link):
     """
-    Reads cancer data from an Excel file or a CSV file based on the specified keyword.
+    Parameters
+    ----------
+    provider_data_link : string of URL link to provider cancer data frame
 
-    Parameters:
-    - file (str): Keyword specifying the type of cancer data to be read.
-      Available options:
-        - 'main': Reads data from the NHS England Excel file.
-        - 'gdo': Reads data from the Get Data Out (GDO) CSV file.
-      Default is 'main'.
+    Returns
+    -------
+    df : Data frame for provider standards for each area represented by the
+    organisation code.
 
-    Returns:
-    - pandas.DataFrame: A DataFrame containing the cancer data.
-
-    Raises:
-    - ValueError: If the specified file keyword is not recognized.
-
-    Examples:
-    >>> main_data = read_cancer_data('main')
-    >>> gdo_data = read_cancer_data('gdo')
     """
-    
-    # URLs for the data sources
-    full_data_link = ('https://www.england.nhs.uk/'
-                      + 'statistics/wp-content/uploads/'
-                      + 'sites/2/2023/12/'
-                      + 'CWT-CRS-2022-23-Data-Extract-Provider-Final.xlsx')
-    
-    GDO_all = ("https://www.cancerdata.nhs.uk/"
-               + "getdataout/GDO_data_wide.csv")
-    
-    # Dictionary mapping keywords to data source URLs
-    link_keyword_dict = {'main': full_data_link,
-                         'gdo': GDO_all}
-    
-    
-    # Read data based on the specified file keyword
-    if file in link_keyword_dict:
-        data = pd.read_excel(link_keyword_dict[file]) if file == 'main' else pd.read_csv(link_keyword_dict[file])
-    else:
-        raise ValueError(f"Unsupported file keyword: {file}")
-        
-    return data
-#### NEED TO MAKE PEP8 COMPLIANT
-def rename_and_replace(df):
-    """
-    Rename specified columns and replace values in the 'CANCER_TYPE' column based on a predefined mapping.
-
-    Parameters:
-    - df (pd.DataFrame): The input DataFrame.
-
-    Returns:
-    - pd.DataFrame: DataFrame with specified column names renamed and values in the 'CANCER_TYPE' column replaced.
-    """
-
     # Dictionary to map old column names to new column names
-    cols_to_rename = {'CANCER TYPE': 'CANCER_TYPE', 'ORG CODE': 'ORG_CODE'}
+    rename_cols = {'PERIOD': 'month',
+                   'STANDARD': 'standard',
+                   'ORG CODE': 'org_code',
+                   'TOTAL': 'total',
+                   'CANCER TYPE': 'cancer_type',
+                   'TREATMENT MODALITY': 'treatment_modality',
+                   'WITHIN STANDARD': 'within_standard',
+                   'BREACHES': 'breaches'}
 
-    # Dictionary to map old values to new values in the 'CANCER_TYPE' column
-    values_to_change = {
-        "CANCER_TYPE": {
-            'Exhibited (non-cancer) breast symptoms - cancer not initially suspected': 'unsuspected_breast_ca',
-            'Missing or Invalid': 'invalid',
-            'Suspected breast cancer': 'suspected_breast_ca',
-            'Suspected gynaecological cancer': 'suspected_gynecological_ca',
-            'Suspected lower gastrointestinal cancer': 'suspected_lower_GI_ca',
-            'Suspected acute leukaemia': 'suspected_acute_leukaemia',
-            'Suspected brain/central nervous system tumours': 'suspected_brain_CNS_tumors',
-            "Suspected children's cancer": 'suspected_children_cancer',
-            'Suspected haematological malignancies (excluding acute leukaemia)': 'suspected_hematological_malignancies',
-            'Suspected head & neck cancer': 'suspected_head_neck_ca',
-            'Suspected lung cancer': 'suspected_lung_ca',
-            'Suspected other cancer': 'suspected_other_ca',
-            'Suspected sarcoma': 'suspected_sarcoma',
-            'Suspected skin cancer': 'suspected_skin_ca',
-            'Suspected testicular cancer': 'suspected_testicular_ca',
-            'Suspected upper gastrointestinal cancer': 'suspected_upper_GI_ca',
-            'Suspected urological malignancies (excluding testicular)': 'suspected_urological_ca',
-            'Breast': 'breast',
-            'Gynaecological': 'gynecological',
-            'Haematological': 'hematological',
-            'Head & Neck': 'head_Neck',
-            'Lower Gastrointestinal': 'lower_GI',
-            'Lung': 'lung',
-            'Other (a)': 'other',
-            'Skin': 'skin',
-            'Upper Gastrointestinal': 'upper_GI',
-            'Urological': 'urological',
-            'ALL CANCERS': 'all_Cancers'
-        }
-    }
+    # Dictionary to rename values  in the 'CANCER_TYPE' column
+    cancer_type_change = {
+        "Cancer_Type": {
+            'Exhibited (non-cancer) breast symptoms - cancer not initially suspected': 'Unsuspected_breast_ca',
+            'Missing or Invalid': 'Invalid',
+            'Suspected breast cancer': 'Suspected_breast_ca',
+            'Suspected gynaecological cancer': 'Suspected_gynecological_ca',
+            'Suspected lower gastrointestinal cancer': 'Suspected_lower_GI_ca',
+            'Suspected acute leukaemia': 'Suspected_acute_leukaemia',
+            'Suspected brain/central nervous system tumours': 'Suspected_brain_CNS_tumors',
+            "Suspected children's cancer": 'Suspected_children_cancer',
+            'Suspected haematological malignancies (excluding acute leukaemia)': 'Suspected_hematological_malignancies',
+            'Suspected head & neck cancer': 'Suspected_head_neck_ca',
+            'Suspected lung cancer': 'Suspected_lung_ca',
+            'Suspected other cancer': 'Suspected_other_ca',
+            'Suspected sarcoma': 'Suspected_sarcoma',
+            'Suspected skin cancer': 'Suspected_skin_ca',
+            'Suspected testicular cancer': 'Suspected_testicular_ca',
+            'Suspected upper gastrointestinal cancer': 'Suspected_upper_GI_ca',
+            'Suspected urological malignancies (excluding testicular)': 'Suspected_urological_malignancies',
+            'Breast': 'Breast',
+            'Gynaecological': 'Gynecological',
+            'Haematological': 'Hematological',
+            'Head & Neck': 'Head_Neck',
+            'Lower Gastrointestinal': 'Lower_GI',
+            'Lung': 'Lung',
+            'Other (a)': 'Other',
+            'Skin': 'Skin',
+            'Upper Gastrointestinal': 'Upper_GI',
+            'Urological': 'Urological',
+            'ALL CANCERS': 'All_Cancers'
 
-    # Rename specified columns
-    df.rename(columns=cols_to_rename, inplace=True)
-
-    # Replace values in the 'CANCER_TYPE' column
-    df['CANCER_TYPE'] = df['CANCER_TYPE'].map(values_to_change['CANCER_TYPE'])
-
+    # read data from excel stating which columns to use, rename columns and
+    # assign variable types
+    df = (pd.read_excel(provider_data_link,
+                        usecols=['PERIOD',
+                                 'STANDARD',
+                                 'ORG CODE',
+                                 'TREATMENT MODALITY',
+                                 'CANCER TYPE',
+                                 'TOTAL',
+                                 'WITHIN STANDARD',
+                                 'BREACHES'])
+          .rename(columns=rename_cols)
+          .astype({
+              'total': np.int32,
+              'within_standard': np.int32,
+              'breaches': np.int32})
+          .assign(standard=lambda x: pd.Categorical(x['standard']),
+                  cancer_type=lambda x: pd.Categorical(x['cancer_type']),
+                  treatment_modality=lambda x: pd.Categorical(
+                      x['treatment_modality']),
+                  org_code=lambda x: pd.Categorical(x['org_code']),
+                  month=lambda x: pd.to_datetime(x['month']))
+          .replace(cancer_type_change)
+          )
     return df
+
+
+def get_national_28_day_standard(national_data_link):
+    """
+
+   Parameters
+    ----------
+    national_data_link : string of URL link to national cancer data
+
+    Returns
+    -------
+    Data frame of monthly performance, total referalls, number of breaches for
+    the 28 day cancer diagnosis standard and number within standard for each
+    month.
+
+    """
+    # Dictionary of columns to rename
+    column_names = {'Monthly': 'month',
+                    'Outside Standard': 'breaches',
+                    'Within Standard': 'within_standard',
+                   'Total': 'total'}
+# read the excel file, including specific sheet number and columns required,
+# assigns variable types and renames columns.
+    df = (pd.read_excel(national_data_link,
+                        sheet_name="Monthly Performance",
+                        skiprows=range(0, 3),
+                        usecols=['Monthly',
+                                 'Total',
+                                 'Within Standard',
+                                 'Outside Standard',])
+          .astype({'Total': np.int32,
+                   'Within Standard': np.int32,
+                   'Outside Standard': np.int32})
+          .rename(columns=column_names)
+          .assign(month=lambda x: pd.to_datetime(x['month']))
+          )
+    # Add extra columns, Org code, Standard and Cancer_Type so details clear
+    # if appended to provider data frame.
+    df['org_code'] = 'NAT'
+    df['standard'] = '28-day FDS'
+    df['cancer_type'] = 'ALL - National Data'
+    df['treatment_modality'] = 'Not applicable 28 day standard'
+    df = df.assign(org_code=lambda x: pd.Categorical(x['org_code']),
+                   standard=lambda x: pd.Categorical(x['standard']),
+                   cancer_type=lambda x: pd.Categorical(x['cancer_type']),
+                   treatment_modality=lambda x: pd.Categorical(
+                       x['treatment_modality'])
+                   )
+    return df
+
+# With the above functions you can then perform 
+new_df = provider_data._append(
+    get_national_28_day_standard(national_data_link))
+
+# Then you can filter the data set how you want if you also include NATand plot NAT as an area code fo
+
+
+
+
+### I think these filter and select functions need checking with the new column names, we also need a way of inputing user definined filtering 
+### and feeding back if there are no cases with selected cancer type
+## Just in case it helps this was my ad hoc method of filtering.
+
+Selected_Standard = ["28-day FDS"]
+df_stan = df_provider[df_provider['Standard'].isin(Selected_Standard)]
+Selected_Org_Code = ["R1K", "NAT"]
+df_stan_org = df_stan[df_stan['Org_Code'].isin(Selected_Org_Code)]
+Selected_Cancer_Type = ["Suspected breast cancer", 'ALL - National Data']
+df_stan_org_can_type = df_stan_org[df_stan_org["Cancer_Type"].isin(Selected_Cancer_Type)]
 
 def select_month(df, month_str):
     """
@@ -371,7 +427,7 @@ def proportion_breaches(df, window_size=3):
     return df
 
 ################################## NATIONAL DATA #################################
-
+### I think with the new function likely no longer needed 
 # Link for national data file perhaps should be stored elsewhere 
 national_data_link = r'https://www.england.nhs.uk/statistics/wp-content/' \
     + 'uploads/sites/2/2023/12/' \
