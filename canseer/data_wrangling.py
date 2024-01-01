@@ -65,7 +65,8 @@ def get_provider(provider_data_link):
             'Skin': 'Skin',
             'Upper Gastrointestinal': 'Upper_GI',
             'Urological': 'Urological',
-            'ALL CANCERS': 'All_Cancers'
+            'ALL CANCERS': 'All_Cancers'}
+    }
 
     # read data from excel stating which columns to use, rename columns and
     # assign variable types
