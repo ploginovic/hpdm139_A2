@@ -25,14 +25,14 @@ def get_provider(provider_data_link):
 
     """
     # Dictionary to map old column names to new column names
-    rename_cols = {'PERIOD': 'Month',
-                   'STANDARD': 'Standard',
-                   'ORG CODE': 'Org_Code',
-                   'TOTAL': 'Total',
-                   'CANCER TYPE': 'Cancer_Type',
-                   'TREATMENT MODALITY': 'Treatment_Modality',
-                   'WITHIN STANDARD': 'Within_Standard',
-                   'BREACHES': 'Breaches'}
+    rename_cols = {'PERIOD': 'month',
+                   'STANDARD': 'standard',
+                   'ORG CODE': 'org_code',
+                   'TOTAL': 'total',
+                   'CANCER TYPE': 'cancer_type',
+                   'TREATMENT MODALITY': 'treatment_modality',
+                   'WITHIN STANDARD': 'within_standard',
+                   'BREACHES': 'breaches'}
 
     # Dictionary to rename values  in the 'CANCER_TYPE' column
     cancer_type_change = {
@@ -80,15 +80,15 @@ def get_provider(provider_data_link):
                                  'BREACHES'])
           .rename(columns=rename_cols)
           .astype({
-              'Total': np.int32,
-              'Within_Standard': np.int32,
-              'Breaches': np.int32})
-          .assign(Standard=lambda x: pd.Categorical(x['Standard']),
-                  Cancer_Type=lambda x: pd.Categorical(x['Cancer_Type']),
-                  Treatment_Modality=lambda x: pd.Categorical(
-                      x['Treatment_Modality']),
-                  Org_Code=lambda x: pd.Categorical(x['Org_Code']),
-                  Month=lambda x: pd.to_datetime(x['Month']))
+              'total': np.int32,
+              'within_standard': np.int32,
+              'breaches': np.int32})
+          .assign(standard=lambda x: pd.Categorical(x['standard']),
+                  cancer_type=lambda x: pd.Categorical(x['cancer_type']),
+                  treatment_modality=lambda x: pd.Categorical(
+                      x['treatment_modality']),
+                  org_code=lambda x: pd.Categorical(x['org_code']),
+                  month=lambda x: pd.to_datetime(x['month']))
           .replace(cancer_type_change)
           )
     return df
@@ -105,13 +105,14 @@ def get_national_28_day_standard(national_data_link):
     -------
     Data frame of monthly performance, total referalls, number of breaches for
     the 28 day cancer diagnosis standard and number within standard for each
-    Month.
+    month.
 
     """
     # Dictionary of columns to rename
-    column_names = {'Monthly': 'Month',
-                    'Outside Standard': 'Breaches',
-                    'Within Standard': 'Within_Standard'}
+    column_names = {'Monthly': 'month',
+                    'Outside Standard': 'breaches',
+                    'Within Standard': 'within_standard',
+                   'Total': 'total'}
 # read the excel file, including specific sheet number and columns required,
 # assigns variable types and renames columns.
     df = (pd.read_excel(national_data_link,
@@ -125,19 +126,19 @@ def get_national_28_day_standard(national_data_link):
                    'Within Standard': np.int32,
                    'Outside Standard': np.int32})
           .rename(columns=column_names)
-          .assign(Month=lambda x: pd.to_datetime(x['Month']))
+          .assign(month=lambda x: pd.to_datetime(x['month']))
           )
     # Add extra columns, Org code, Standard and Cancer_Type so details clear
     # if appended to provider data frame.
-    df['Org_Code'] = 'NAT'
-    df['Standard'] = '28-day FDS'
-    df['Cancer_Type'] = 'ALL - National Data'
-    df['Treatment_Modality'] = 'Not applicable 28 day standard'
-    df = df.assign(Org_Code=lambda x: pd.Categorical(x['Org_Code']),
-                   Standard=lambda x: pd.Categorical(x['Standard']),
-                   Cancer_Type=lambda x: pd.Categorical(x['Cancer_Type']),
-                   Treatment_Modality=lambda x: pd.Categorical(
-                       x['Treatment_Modality'])
+    df['org_code'] = 'NAT'
+    df['standard'] = '28-day FDS'
+    df['cancer_type'] = 'ALL - National Data'
+    df['treatment_modality'] = 'Not applicable 28 day standard'
+    df = df.assign(org_code=lambda x: pd.Categorical(x['org_code']),
+                   standard=lambda x: pd.Categorical(x['standard']),
+                   cancer_type=lambda x: pd.Categorical(x['cancer_type']),
+                   treatment_modality=lambda x: pd.Categorical(
+                       x['treatment_modality'])
                    )
     return df
 
@@ -405,7 +406,7 @@ def proportion_breaches(df, window_size=3):
     return df
 
 ################################## NATIONAL DATA #################################
-
+### I think with the new function likely no longer needed 
 # Link for national data file perhaps should be stored elsewhere 
 national_data_link = r'https://www.england.nhs.uk/statistics/wp-content/' \
     + 'uploads/sites/2/2023/12/' \
