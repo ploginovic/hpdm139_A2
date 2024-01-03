@@ -143,6 +143,58 @@ def get_national_28_day_standard(national_data_link):
                    )
     return df
 
+def get_national_31_day_standard(national_data_link):
+    """
+
+   Parameters
+    ----------
+    national_data_link : string of URL link to national cancer data
+
+    Returns
+    -------
+    Data frame of monthly performance, total referalls, number of breaches for
+    the 31 day cancer standard 
+
+    """
+    # Dictionary of columns to rename
+    column_names = {'Monthly': 'month',
+                    'Outside Standard.1': 'breaches',
+                    'Within Standard.1': 'within_standard',
+                   'Total.1': 'total'}
+        # dictionary to recode NaN values as 0
+    recoding = {'Total.1': 0,
+                'Within Standard.1': 0,
+                'Outside Standard.1': 0}
+# read the excel file, including specific sheet number and columns required,
+# assigns variable types and renames columns.
+    df = (pd.read_excel(national_data_link,
+                        sheet_name="Monthly Performance",
+                        skiprows=range(0, 3),
+                        usecols=['Monthly',
+                                 'Total.1',
+                                 'Within Standard.1',
+                                 'Outside Standard.1',])
+          .fillna(value=recoding)
+          .astype({'Total.1': np.int32,
+                   'Within Standard.1': np.int32,
+                   'Outside Standard.1': np.int32})
+          .rename(columns=column_names)
+          .assign(month=lambda x: pd.to_datetime(x['month']))
+          )
+    # Add extra columns, Org code, Standard and Cancer_Type so details clear
+    # if appended to provider data frame.
+    df['org_code'] = 'NAT'
+    df['standard'] = '31-day Combined'
+    df['cancer_type'] = 'ALL - National Data'
+    df['treatment_modality'] = 'Not available - National Data'
+    df = df.assign(org_code=lambda x: pd.Categorical(x['org_code']),
+                   standard=lambda x: pd.Categorical(x['standard']),
+                   cancer_type=lambda x: pd.Categorical(x['cancer_type']),
+                   treatment_modality=lambda x: pd.Categorical(
+                       x['treatment_modality'])
+                   )
+    return df
+
 # With the above functions you can then perform 
 new_df = provider_data._append(
     get_national_28_day_standard(national_data_link))
