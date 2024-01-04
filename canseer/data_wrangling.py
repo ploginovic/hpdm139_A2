@@ -7,7 +7,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 def get_provider_cancer_waiting_times():
     """
     Parameters
@@ -27,8 +26,7 @@ def get_provider_cancer_waiting_times():
         + 'CWT-CRS-2022-23-Data-Extract-Provider-Final.xlsx'
 
     # Dictionary to map old column names to new column names
-    rename_cols = {'PERIOD': 'month',
-                   'STANDARD': 'standard',
+    rename_cols = { 'STANDARD': 'standard',
                    'ORG CODE': 'org_code',
                    'TOTAL': 'total',
                    'CANCER TYPE': 'cancer_type',
@@ -83,7 +81,7 @@ def get_provider_cancer_waiting_times():
                                  'STAGE/ROUTE',
                                  'TOTAL',
                                  'WITHIN STANDARD',
-                                 'BREACHES'])
+                                 'BREACHES'], index_col='PERIOD', parse_dates=True)
           .rename(columns=rename_cols)
           .astype({
               'total': np.int32,
@@ -96,13 +94,12 @@ def get_provider_cancer_waiting_times():
                       x['treatment_modality']),
                   org_code=lambda x: pd.Categorical(x['org_code']),
                   stage_or_route=lambda x:  pd.Categorical(
-                      x['stage_or_route']),
-                  month=lambda x: pd.to_datetime(x['month']))
+                      x['stage_or_route']))
           .replace(cancer_type_change)
           )
+    # rename the index to month 
+    df.index.name='month'
     return df
-
-
 def get_national_28_day_standard():
     """
 
@@ -114,7 +111,7 @@ def get_national_28_day_standard():
     -------
     A data frame with national data for the 28 day standard which
     reports the total referals, number of breaches and number within standard
-    per month from June 2021 to October 2023. Organisation code for the
+    per month from April 2021 to October 2023. Organisation code for the
     national data set is recorded as NAT. Suitable to be appended to provider
     data.
 
@@ -125,8 +122,7 @@ def get_national_28_day_standard():
         + 'CWT-CRS-National-Time-Series-Oct-2009-Oct-2023-with-'\
                          + 'Revisions.xlsx'
     # Dictionary of columns to rename
-    column_names = {'Monthly': 'month',
-                    'Outside Standard': 'breaches',
+    column_names = {'Outside Standard': 'breaches',
                     'Within Standard': 'within_standard',
                     'Total': 'total'}
 # read the excel file, including specific sheet number and columns required,
@@ -137,13 +133,14 @@ def get_national_28_day_standard():
                         usecols=['Monthly',
                                  'Total',
                                  'Within Standard',
-                                 'Outside Standard',])
-          .astype({'Total': np.int32,
+                                 'Outside Standard'],
+                        index_col='Monthly',
+                        parse_dates=True)
+           .astype({'Total': np.int32,
                    'Within Standard': np.int32,
                    'Outside Standard': np.int32})
           .rename(columns=column_names)
-          .assign(month=lambda x: pd.to_datetime(x['month']))
-          )
+         )
     # Add extra columns, Org code, Standard and Cancer_Type so details clear
     # if appended to provider data frame.
     df['org_code'] = 'NAT'
@@ -156,10 +153,10 @@ def get_national_28_day_standard():
                    cancer_type=lambda x: pd.Categorical(x['cancer_type']),
                    treatment_modality=lambda x: pd.Categorical(
         x['treatment_modality']),
-        stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
+                   stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
     )
+    df.index.name='month'
     return df
-
 
 def get_national_31_day_standard():
     """
@@ -183,8 +180,7 @@ def get_national_31_day_standard():
                          + 'CWT-CRS-National-Time-Series-Oct-2009-Oct-2023-with-'\
                          + 'Revisions.xlsx'
     # Dictionary of columns to rename
-    column_names = {'Monthly': 'month',
-                    'Outside Standard.1': 'breaches',
+    column_names = {'Outside Standard.1': 'breaches',
                     'Within Standard.1': 'within_standard',
                     'Total.1': 'total'}
     # dictionary to recode NaN values as 0
@@ -199,13 +195,13 @@ def get_national_31_day_standard():
                         usecols=['Monthly',
                                  'Total.1',
                                  'Within Standard.1',
-                                 'Outside Standard.1',])
+                                 'Outside Standard.1',],
+                       index_col='Monthly', parse_dates=True)
           .fillna(value=recoding)
           .astype({'Total.1': np.int32,
                    'Within Standard.1': np.int32,
                    'Outside Standard.1': np.int32})
           .rename(columns=column_names)
-          .assign(month=lambda x: pd.to_datetime(x['month']))
           )
     # drop the rows where there is month recorded but no data on referrals
     df = df.drop(df[df['total'] == 0].index)
@@ -223,7 +219,9 @@ def get_national_31_day_standard():
                        x['treatment_modality']),
                    stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
                    )
+    df.index.name='month'
     return df
+
 
 
 def get_national_62_day_standard():
@@ -248,8 +246,7 @@ def get_national_62_day_standard():
                          + 'CWT-CRS-National-Time-Series-Oct-2009-Oct-2023-with-'\
                          + 'Revisions.xlsx'
     # Dictionary of columns to rename
-    column_names = {'Monthly': 'month',
-                    'Outside Standard.2': 'breaches',
+    column_names = {'Outside Standard.2': 'breaches',
                     'Within Standard.2': 'within_standard',
                     'Total.2': 'total'}
     # dictionary to recode NaN values as 0
@@ -261,10 +258,12 @@ def get_national_62_day_standard():
     df = (pd.read_excel(national_data_link,
                         sheet_name="Monthly Performance",
                         skiprows=range(0, 3),
-                        usecols=['Monthly',
+                        usecols= ['Monthly',
                                  'Total.2',
                                  'Within Standard.2',
-                                 'Outside Standard.2',])
+                                 'Outside Standard.2'],
+                       index_col='Monthly',
+                       parse_dates=True)
           .fillna(value=recoding)
           .astype({'Total.2': np.int32,
                    'Within Standard.2': np.int32,
@@ -288,11 +287,37 @@ def get_national_62_day_standard():
                        x['treatment_modality']),
                    stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
                    )
+    df.index.name='month'
     return df
+
+#### Filters ####
+def select_months(df, start_date,end_date):
+    """
+
+    Parameters
+    ----------
+    df : Dataframe
+    start_date : string 
+        Format should be month-year 
+        e.g start date of April 2022 is start_date = '04-2022'
+    end_date :string 
+        Format should be month-year 
+        e.g end date of May 2022 is end_date = '05-2022'
+
+    Returns
+    -------
+    None.
+
+    """
+
+    df_month = df.loc[(df.index >= start_date)
+                     & (df.index <= end_date)]
+    return df_month
 
 # With the above functions you can then perform 
 new_df = provider_data._append(
     get_national_28_day_standard(national_data_link))
+
 
 # Then you can filter the data set how you want if you also include NATand plot NAT as an area code fo
 
