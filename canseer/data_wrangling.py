@@ -3,10 +3,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-
 def get_provider_cancer_waiting_times():
     """
     Parameters
@@ -100,6 +96,7 @@ def get_provider_cancer_waiting_times():
     # rename the index to month 
     df.index.name='month'
     return df
+    
 def get_national_28_day_standard():
     """
 
@@ -314,13 +311,31 @@ def select_months(df, start_date,end_date):
                      & (df.index <= end_date)]
     return df_month
 
-# With the above functions you can then perform 
-new_df = provider_data._append(
-    get_national_28_day_standard(national_data_link))
 
+def select_org(df, org_list):
+    """
 
-# Then you can filter the data set how you want if you also include NATand plot NAT as an area code fo
+    Parameters
+    ----------
+    df : Dataframe
+       Dataframe that requires filtering
+    org_list : List of org_codes that you wish to filter
+        For example org_list = ["R1K", "NAT"] will filter data to contain
+        only provider "R1K" and "NAT" for the national data.
 
+    Returns
+    -------
+    df_org : Dataframe
+        Dataframe containing only the organisations in the org_code list.
+
+    """
+    # Convert org list to uppercase and only use the first three characters
+    org_list_format = []
+    for org in org_list:
+        org_list_format.append(org[:3].upper())
+    # Filter dataframe based on the list of org codes
+    df_org = df[df['org_code'].isin(org_list_format)]
+    return df_org
 
 
 
@@ -335,66 +350,8 @@ df_stan_org = df_stan[df_stan['Org_Code'].isin(Selected_Org_Code)]
 Selected_Cancer_Type = ["Suspected breast cancer", 'ALL - National Data']
 df_stan_org_can_type = df_stan_org[df_stan_org["Cancer_Type"].isin(Selected_Cancer_Type)]
 
-def select_month(df, month_str):
-    """
-    Returns a subset of a DataFrame based on the specified month.
-
-    Parameters:
-    - df (pandas.DataFrame): The DataFrame containing the data.
-    - month_str (str): A string representing the month
-    Returns:
-    - pandas.DataFrame: A subset of the input DataFrame containing only
-        rows corresponding to the specified month.
-
-    Raises:
-    - ValueError: If the specified month abbreviation is not valid.
-
-    Example:
-    >>> data = pd.DataFrame({'MONTH': ['JAN', 'FEB', 'MAR', 'APR', 'MAY'],
-    ...                      'Value': [10, 15, 20, 25, 30]})
-    >>> selected_data = select_month(data, 'mar')
-    >>> print(selected_data)
-      MONTH  Value
-    2   MAR     20
-    """
-    # List of valid month abbreviations
-    month_list = ['APR', 'MAY', 'JUN', 'JUL',
-                  'AUG', 'SEP', 'OCT', 'NOV',
-                  'DEC', 'JAN', 'FEB', 'MAR']
-
-    # Convert input month string to uppercase and use the first three characters
-    month_str = month_str[:3].upper()
-
-    # Check if the specified month is valid
-    if month_str in month_list:
-        # Select rows corresponding to the specified month
-        df_month = df.loc[df.MONTH == month_str]
-        return df_month
-    else:
-        # Raise an error for invalid month abbreviation
-        raise ValueError("Invalid month abbreviation. Please enter a valid three-letter month abbreviation.")
 
 
-#Unfinished DOCSTRING
-def select_org(df, org_str):
-    """
-    Pretty much the same as select_month()
-    """
-    # List of valid organisation codes from the 
-    link_data = nhs_code_link()
-    valid_org = list(set(df['ORG_CODE']) & set(link_data['ORG_CODE']))
-
-    # Convert input month string to uppercase and use the first three characters
-    org_code = org_str[:3].upper()
-
-    # Check if the specified month is valid
-    if org_code in valid_org:
-        # Select rows corresponding to the specified month
-        df_org = df.loc[df['ORG_CODE'] == org_code]
-        return df_org
-    else:
-        # Raise an error for invalid month abbreviation
-        raise ValueError("Organisation not found. Suggest exploring organisation table.")
         
 def select_cancer(df, cancer_type):
     
