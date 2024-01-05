@@ -33,7 +33,7 @@ def get_provider_cancer_waiting_times():
 
     # Dictionary to rename values  in the 'CANCER_TYPE' column
     cancer_type_change = {
-        'Cancer_Type': {
+        'cancer_type': {
             'Exhibited (non-cancer) breast symptoms - cancer not initially suspected': 'Unsuspected_breast_ca',
             'Missing or Invalid': 'Invalid',
             'Suspected breast cancer': 'Suspected_breast_ca',
