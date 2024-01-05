@@ -114,7 +114,8 @@ def get_provider_cancer_waiting_times():
     # rename the index to month
     df.index.name = 'month'
     return df
-    
+
+
 def get_national_28_day_standard():
     """
 
@@ -172,6 +173,7 @@ def get_national_28_day_standard():
     )
     df.index.name='month'
     return df
+    
 
 def get_national_31_day_standard():
     """
@@ -320,13 +322,14 @@ def select_months(df, start_date,end_date):
 
     Returns
     -------
-    None.
+    df: Dataframe 
+    Dataframe with referalls from start to end date.
 
     """
 
-    df_month = df.loc[(df.index >= start_date)
+    df = df.loc[(df.index >= start_date)
                      & (df.index <= end_date)]
-    return df_month
+    return df
 
 def select_org(df, org_list):
     """
@@ -346,7 +349,7 @@ def select_org(df, org_list):
 
     Returns
     -------
-    df_org : Dataframe
+    df: Dataframe
         Dataframe containing only the organisations in the org_code list.
 
     """
@@ -354,16 +357,15 @@ def select_org(df, org_list):
     org_list_format = []
     for org in org_list:
         org_list_format.append(org[:3].upper())
-        # check to see if each string in org list is in the dataframe.
+    # check to see if each string in org list is in the dataframe
     for org in org_list_format:
         if not df['org_code'].eq(org).any():
             raise ValueError(
                 'Org code in org_list is not in the dataframe')
             break
     # Filter dataframe based on the list of org codes
-    df_org = df[df['org_code'].isin(org_list_format)]
-    return df_org
-
+    df = df[df['org_code'].isin(org_list_format)]
+    return df 
 
 def select_standard(df, standard_list):
     """
@@ -395,9 +397,11 @@ def select_standard(df, standard_list):
     Containing only standards in standard_list
 
     """
+    # Dictionary of standard in the dataframe
     standard_dict = {'FDS': '28-day FDS',
                      'DTT': '31-day Combined', 'RTT': '62-day Combined'}
     standard_format = []
+    # If standard not in dictionary raises error
     for stan in standard_list:
         if stan not in standard_dict:
             raise ValueError(
@@ -405,13 +409,13 @@ def select_standard(df, standard_list):
                 'See help_with(standards) or help(select_standard)'
             )
             break
+    # If it is add the row value to the standard_format list 
         else:
             standard_format.append(standard_dict[stan])
             continue
-
-    df_stan = df[df['standard'].isin(standard_list)]
-    return df_stan
-
+    # Keep the rows which have a standard in the standard_format list
+    df = df[df['standard'].isin(standard_format)]
+    return df
 
 def select_cancer(df, cancer_type_list):
     """
@@ -432,7 +436,7 @@ def select_cancer(df, cancer_type_list):
 
     Returns
     -------
-    df_cancer : Dataframe
+    df : Dataframe
         Dataframe containing only cancer types in the cancer_type_list
 
     """
@@ -445,9 +449,8 @@ def select_cancer(df, cancer_type_list):
         else:
             continue
 # filters the dataframe based on the cancer type list
-    df_cancer = df[df['cancer_type'].isin(cancer_type_list)]
-    return df_cancer
-
+    df = df[df['cancer_type'].isin(cancer_type_list)]
+    return df
 
 def select_treatment_modality(df, treatment_modality_list):
     """
@@ -467,7 +470,7 @@ def select_treatment_modality(df, treatment_modality_list):
 
     Returns
     -------
-    df_treat : Dataframe
+    df  : Dataframe
         Dataframe containing the treatments in treatment_modality_list.
 
     """
@@ -479,8 +482,8 @@ def select_treatment_modality(df, treatment_modality_list):
                 'treatment modality in treatment_modality_list is not in the dataframe')
             break
     # Filter dataframe based on the list of treatment modalitys
-    df_treat = df[df['treatment_modality'].isin(treatment_modality_list)]
-    return df_treat
+    df = df[df['treatment_modality'].isin(treatment_modality_list)]
+    return df
 
 
 def select_stage_or_route(df, stage_or_route_list):
@@ -502,7 +505,7 @@ def select_stage_or_route(df, stage_or_route_list):
 
     Returns
     -------
-    df_route : Dataframe
+    df : Dataframe
         Dataframe containing the routes or stage in stage_or_route_list
 
     """
@@ -514,25 +517,63 @@ def select_stage_or_route(df, stage_or_route_list):
                 'stage or route in stage_or_route_list is not in the dataframe')
             break
     # Filter dataframe based on the list of stage_or_route
-    df_stage = df[df['stage_or_route'].isin(stage_or_route_list)]
-    return df_stage
+    df = df[df['stage_or_route'].isin(stage_or_route_list)]
+    return df
 
+def filter_data(df, filters):
+    """
 
-### I think these filter and select functions need checking with the new column names, we also need a way of inputing user definined filtering 
-### and feeding back if there are no cases with selected cancer type
-## Just in case it helps this was my ad hoc method of filtering.
-
-Selected_Standard = ["28-day FDS"]
-df_stan = df_provider[df_provider['Standard'].isin(Selected_Standard)]
-Selected_Org_Code = ["R1K", "NAT"]
-df_stan_org = df_stan[df_stan['Org_Code'].isin(Selected_Org_Code)]
-Selected_Cancer_Type = ["Suspected breast cancer", 'ALL - National Data']
-df_stan_org_can_type = df_stan_org[df_stan_org["Cancer_Type"].isin(Selected_Cancer_Type)]
-
-
-
+    Parameters
+    ----------
+    df : dataframe
+        dataframe to be filters
+    filters : Dictionary 
+        Filters to be applied to data.
+        The following key words should be used 'start_month', 'end_month',
+        'standard', 'org', 'stage_or_route', 'treatment', 'cancer_type'.
+        Not all the filter keys need to be used.
+        If start_month is used the format should be start_month: 'M -YYYY'
+        If end_month is used the format should be end_month: 'M -YYYY'
+        For the other filters the format should be key: ['string', 'string']
+        with 'string' corresponding to the row value or values you would want to include.
         
+        For example 
+        filters = {'start_month': '08-2022',
+           'end_month' : '09-2022',
+          'standard': ['FDS', 'DTT'],
+          'org': ['RWP', 'RXQ'],
+          'stage_or_route': ['subsequent_treatment'],
+          'treatment': ['radiotherapy'] }
+          
+    Returns
+    -------
+    df : Dataframe
+       Dataframe with filers applied
 
+    """
+
+    if 'start_month' in filters:
+        df = df.loc[(df.index >= filters.get('start_month'))]
+
+    if 'end_month' in filters:
+        df = df.loc[(df.index <= filters.get('end_month'))]
+
+    if 'standard' in filters:
+        df = select_standard(df, filters.get('standard'))
+
+    if 'org' in filters:
+        df = select_org(df, filters.get('org'))
+
+    if 'stage_or_route' in filters:
+        df = select_stage_or_route(df, filters.get('stage_or_route'))
+
+    if 'treatment' in filters:
+        df = select_treatment_modality(df, filters.get('treatment'))
+
+    if 'cancer_type' in filters:
+        df = select_cancer(df, filters.get('cancer_type'))
+    return df
+    
 def nhs_code_link():
     
     """This function reads a link file between the 'ORG_CODE' and NHS Trust name
