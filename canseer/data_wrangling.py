@@ -162,7 +162,7 @@ def get_national_28_day_standard():
     df['org_code'] = 'NAT'
     df['standard'] = '28-day FDS'
     df['cancer_type'] = 'ALL - National Data'
-    df['treatment_modality'] = 'Not applicable 28 day standard'
+    df['treatment_modality'] = 'Not_applicable_FDS'
     df['stage_or_route'] = 'Not applicable National Data'
     df = df.assign(org_code=lambda x: pd.Categorical(x['org_code']),
                    standard=lambda x: pd.Categorical(x['standard']),
