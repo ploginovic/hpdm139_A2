@@ -877,13 +877,13 @@ def select_data(df, filters):
 
 def proportion_breaches(df, window_size=3):
     # Calculate the proportion of breaches
-    df['PROPORTION_BREACHES'] = df['BREACHES'] / df['TOTAL']
+    df['proportion_breaches'] = df['breaches'] / df['total']
 
 # Create a sliding window to calculate the moving average of the proportion of breaches
-    df['MOVING_AVERAGE'] = df['PROPORTION_BREACHES'].rolling(window=window_size).mean()
+    df['moving_average'] = df['proportion_breaches'].rolling(window=window_size).mean()
     
     return df
-
+    
 ################################## NATIONAL DATA #################################
 ### I think with the new function likely no longer needed 
 # Link for national data file perhaps should be stored elsewhere 
