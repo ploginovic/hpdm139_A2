@@ -226,9 +226,9 @@ def get_national_31_day_standard():
     # if appended to provider data frame.
     df['org_code'] = 'NAT'
     df['standard'] = '31-day Combined'
-    df['cancer_type'] = 'ALL - National Data'
-    df['treatment_modality'] = 'Not available - National Data'
-    df['stage_or_route'] = 'Not applicable National Data'
+    df['cancer_type'] = 'all_national_data'
+    df['treatment_modality'] = 'not_applicable_national_data'
+    df['stage_or_route'] = 'not_applicable_national_data'
     df = df.assign(org_code=lambda x: pd.Categorical(x['org_code']),
                    standard=lambda x: pd.Categorical(x['standard']),
                    cancer_type=lambda x: pd.Categorical(x['cancer_type']),
@@ -293,9 +293,9 @@ def get_national_62_day_standard():
     # if appended to provider data frame.
     df['org_code'] = 'NAT'
     df['standard'] = '62-day Combined'
-    df['cancer_type'] = 'ALL - National Data'
-    df['treatment_modality'] = 'Not available - National Data'
-    df['stage_or_route'] = 'Not applicable National Data'
+    df['cancer_type'] = 'all_national_data'
+    df['treatment_modality'] = 'not_applicable_national_data'
+    df['stage_or_route'] = 'not_applicable_national_data'
     df = df.assign(org_code=lambda x: pd.Categorical(x['org_code']),
                    standard=lambda x: pd.Categorical(x['standard']),
                    cancer_type=lambda x: pd.Categorical(x['cancer_type']),
