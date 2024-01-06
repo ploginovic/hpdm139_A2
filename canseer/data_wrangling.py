@@ -559,7 +559,8 @@ def filter_data(df, filters):
         df = df.loc[(df.index <= filters.get('end_month'))]
 
     if 'standard' in filters:
-        df = select_standard(df, filters.get('standard'))
+        standard_list = filters.get('standard')
+        df = select_standard(df, standard_list)
 
     if 'org' in filters:
         df = select_org(df, filters.get('org'))
