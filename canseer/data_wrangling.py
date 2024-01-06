@@ -81,7 +81,7 @@ def get_provider_cancer_waiting_times():
     }
 
     # explain NaN value in treatment modality
-    recode_nan = {'treatment_modality': 'Not_applicable_FDS'}
+    recode_nan = {'treatment_modality': 'not_applicable_FDS'}
     # read data from excel stating which columns to use, rename columns and
     # assign variable types
     df = (pd.read_excel(provider_data_link,
@@ -161,9 +161,9 @@ def get_national_28_day_standard():
     # if appended to provider data frame.
     df['org_code'] = 'NAT'
     df['standard'] = '28-day FDS'
-    df['cancer_type'] = 'ALL - National Data'
-    df['treatment_modality'] = 'Not_applicable_FDS'
-    df['stage_or_route'] = 'Not applicable National Data'
+    df['cancer_type'] = 'all_national_data'
+    df['treatment_modality'] = 'not_applicable_FDS'
+    df['stage_or_route'] = 'not_applicable_national_data'
     df = df.assign(org_code=lambda x: pd.Categorical(x['org_code']),
                    standard=lambda x: pd.Categorical(x['standard']),
                    cancer_type=lambda x: pd.Categorical(x['cancer_type']),
