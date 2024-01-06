@@ -573,7 +573,34 @@ def filter_data(df, filters):
     if 'cancer_type' in filters:
         df = select_cancer(df, filters.get('cancer_type'))
     return df
-    
+
+def name_org_code(name=None):
+    """
+
+    Parameters
+    ----------
+    name : String,
+    The default is None, Name of trust.
+
+    Returns
+    -------
+    Organisation Code for that trust or if input is None printed
+    dictionary of all the Names to Organisation Codes.
+
+    """
+    use_cols = ['Name', "Organisation Code"]
+    df = pd.read_csv(r"data/ods_data/geographic_etr.csv", usecols=use_cols)
+    name_org_code_dict = df.set_index('Name')['Organisation Code'].to_dict()
+    name = name.upper()
+    if name is None:
+        print(name_org_code_dict)
+
+    elif name not in name_org_code_dict:
+        print("Trust name not in dictionary")
+
+    else:
+        print(name_org_code_dict[name])
+
 def nhs_code_link():
     
     """This function reads a link file between the 'ORG_CODE' and NHS Trust name
