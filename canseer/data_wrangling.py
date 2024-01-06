@@ -615,7 +615,8 @@ def help_with(topic=None):
     Provide information and help related to cancer data.
 
     Parameters:
-    - topic (str): The topic you need help with. Options are 'standards', 'cancers', 'orgs', 'stage'.
+    - topic (str): The topic you need help with. Options are 'standards',
+    'cancers', 'orgs', 'stage'.
       If not provided, the function will prompt the user to select a topic.
 
     Returns:
@@ -624,55 +625,154 @@ def help_with(topic=None):
     Example:
     >>> help_with('cancers')
     """
-
+# description of column data
     fds_description = ("1. The 28-day Faster Diagnosis Standard (FDS).\n"
                        + "The standard: People should have cancer "
                        + "ruled out or receive a diagnosis within 28 days\n"
-                       + "NHS target: 75% of people should meet this standard\n\n")
+                       + "NHS target: 75% of people should meet this standard\n\n"
+                       )
 
     dtt_description = ("2. 31-day decision to treat to treatment standard (DTT).\n"
                        + "The standard: Treatment should begin within a month (31 days)"
                        + "of deciding to treat their cancer.\n"
-                       + "NHS target: 96% of people should meet this standard\n\n")
+                       + "NHS target: 96% of people should meet this standard\n\n"
+                       )
 
     rtt_description = ("3.62-day referral to treatment standard\n"
                        + "The standard: Treatment should begin within"
                        + "two months (62 days) of an urgent referral.\n"
-                       + "NHS target: 85% of people should meet this standard\n\n")
+                       + "NHS target: 85% of people should meet this standard\n\n"
+                       )
 
     cancer_uk_standards = ('https://news.cancerresearchuk.org/'
-                          + '2023/08/17/breaking-down-nhs-englands-'
-                          + 'changes-in-standards-for-cancer-care/')
+                           + '2023/08/17/breaking-down-nhs-englands-'
+                           + 'changes-in-standards-for-cancer-care/')
 
     cancer_types_info = ("Cancer Types Information:\n"
-                         + "1. Exhibited (non-cancer) breast symptoms - cancer not initially suspected\n"
-                         + "2. Missing or Invalid\n"
-                         + "3. Suspected breast cancer\n"
-                         + "4. Suspected gynaecological cancer\n"
-                         + "5. ... (and so on)\n")
+                         + "Column in dataset of cancer referrals from\n"
+                         + " individual providers (NHS trusts) "
+                         + "1.  Unsuspected_breast_ca \n"
+                         + "2.  Invalid\n"
+                         + "3.  Suspected_breast_ca\n"
+                         + "4.  Suspected_gynecological_ca\n"
+                         + " 5.  Suspected_lower_GI_ca\n"
+                         + " 6.  Suspected_acute_leukaemia\n"
+                         + "7.  Suspected_brain_CNS_ca\n"
+                         + "8.  Suspected_children_ca\n"
+                         + "9.  Suspected_hematological_ca\n"
+                         + "10. Suspected_head_neck_ca\n"
+                         + "11. Suspected_lung_ca\n"
+                         + "12. Suspected_other_ca\n"
+                         + "13. Suspected_sarcoma\n"
+                         + "14. Suspected_skin_ca\n"
+                         + "15. Suspected_testicular_ca\n"
+                         + "16. Suspected_upper_GI_ca\n"
+                         + " 17. Suspected_urological_ca\n"
+                         + "18. Breast\n"
+                         + "19. Gynecological\n"
+                         + "20. Hematological\n"
+                         + "21. Head_Neck\n"
+                         + "22. Lower_GI\n"
+                         + "23. Lung\n"
+                         + "24  Other\n"
+                         + "25. Skin\n"
+                         + "26. Upper_GI\n"
+                         + "27  Urological\n"
+                         + "28. All_Cancers\n"
+                         + "29. all_national_data\n\n"
+                         )
 
-    selection_dict = {1: "standards", 2: 'cancers', 3: 'orgs', 4: 'stage'}
+    org_code_info = ("Org_code Information: \n"
+                     + "Column in dataset of cancer referrals from"
+                     + " individual providers (NHS trusts).\n "
+                     + "Each NHS trust is represented by an org_code.\n"
+                     + "To find an org_code for an individual trust the"
+                     + "function () can be used\n\n"
+                     )
 
+    stage_or_route_info = ("Stage_or_route Information: \n"
+                           + "Column in dataset of cancer referrals from"
+                           + " individual providers (NHS trusts).\n "
+                           + "The route of the referral is shown.\n"
+                           + "1. breast_symptom_non_cancer\n"
+                           + "2. screening\n"
+                           + "3. urgent_suspected_cancer\n"
+                           + "4. first_treatment\n"
+                           + "5. subsequent_treatment\n"
+                           + "6. breast_symptom\n"
+                           + "7. consultant_upgrade\n"
+                           + "8. urgent_suspected_cancer\n"
+                           + "9. not_applicable_national_data\n\n")
+
+    treatment_modality_info = ("Treatment_modality Information: \n"
+                               + "Column in dataset of cancer referrals from"
+                               + " individual providers (NHS trusts).\n "
+                               + "Treatment modality applies to the DTT and RTT"
+                               + "standards.\n"
+                               + "1. Not_applicable_FDS\n"
+                               + "2. all\n"
+                               + "3. anticancer_drug\n"
+                               + "4. other\n"
+                               + "5. radiotherapy\n"
+                               + "6. surgery\n"
+                               + "7. not_applicable_national_data\n\n")
+
+    breaches_info = (
+        "Breaches: The number of referrals not meeting the standard\n\n")
+
+    within_standard_info = (
+        "Within_standard: The number of referrals meeting the standard")
+
+# Dictionary of selection option
+    selection_dict = {1: "standards",
+                      2: "cancer_type",
+                      3: "org_code",
+                      4: "stage_or_route",
+                      5: "treatment_modality",
+                      6: "breaches",
+                      7: "within_standard"}
+
+# If topic not selected ask user for number input
     if topic is None:
         print("Please select which aspect of the data you need help with:" + "\n"
               + "1.) NHS Cancer standards" + "\n"
               + "2.) Types of cancer" + "\n"
               + "3.) NHS Organisation Codes" + "\n"
-              + "4.) Stage/Route")
-        select_topic = int(input("Select the number of a topic from above: \n\n"))
+              + "4.) Stage/Route" + "\n"
+              + "5.) Treatment modality" + "\n"
+              + "6.) Breaches" + "\n"
+              + "7.) Within Standard" + "\n""\n")
+
+        select_topic = int(
+            input("Select the number of a topic from above: \n\n"))
         topic = selection_dict[select_topic]
 
+# If topic is selected then print information
     if topic.lower() == 'standards':
         print("There are three standards present in this dataset:\n",
               fds_description,
               dtt_description,
               rtt_description,
-              '\n', 'Further info at: ', cancer_uk_standards)
+              "\n", "Further info at: ", cancer_uk_standards)
 
-    elif topic.lower() == 'cancers':
+    elif topic.lower() == "cancer_type":
         print(cancer_types_info)
 
-    # Add additional conditions for other topics (orgs, stage) as needed
+    elif topic.lower() == "org_code":
+        print(org_code_info)
+
+    elif topic. lower() == "stage_or_route":
+        print(stage_or_route_info)
+
+    elif topic.lower() == "treatment_modality":
+        print(treatment_modality_info)
+
+    elif topic.lower() == "breaches":
+        print(breaches_info)
+
+    elif topic.lower() == "within_standard":
+        print(within_standard_info)
+
 
 def select_data(df, filters):
     """
