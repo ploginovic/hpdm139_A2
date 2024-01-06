@@ -574,7 +574,7 @@ def filter_data(df, filters):
         df = select_cancer(df, filters.get('cancer_type'))
     return df
 
-def name_org_code(name=None):
+def name_org_code(trust_name=None):
     """
 
     Parameters
@@ -588,18 +588,22 @@ def name_org_code(name=None):
     dictionary of all the Names to Organisation Codes.
 
     """
+    # read in file with Name and organisation code from the data folder
     use_cols = ['Name', "Organisation Code"]
     df = pd.read_csv(r"data/ods_data/geographic_etr.csv", usecols=use_cols)
+    # make the columns into a dictionary
     name_org_code_dict = df.set_index('Name')['Organisation Code'].to_dict()
-    name = name.upper()
-    if name is None:
+    # trust_name is upper case 
+    trust_name = trust_name.upper()
+    # if None input print the dictionary 
+    if trust_name is None:
         print(name_org_code_dict)
-
-    elif name not in name_org_code_dict:
+    # if trust_name not in dictionary print a message 
+    elif trust_name not in name_org_code_dict:
         print("Trust name not in dictionary")
-
+    # print org_code corresponding to trust_name 
     else:
-        print(name_org_code_dict[name])
+        print(name_org_code_dict[trust_name])
 
 def nhs_code_link():
     
