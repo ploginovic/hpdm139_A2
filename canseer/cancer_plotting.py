@@ -4,50 +4,52 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from data_wrangling import select_data
 
-def plot_stacked(data, labels, y_label, leg_loc='best', n_cols=1):
+def plot_stacked_referrals(df, subgroups, labels, ncol, graph_title, y_label):
     """
-    Plots a stack plot over time 
+
+    Parameters
     ----------
-    data : dataframe 
-    labels : String 
-        Labels of different subgroups plotted 
-    y_label : String 
-        y label axis
-    leg_loc : TYPE, optional
-        DESCRIPTION. The default is 'best', where the graph is located
-    n_cols : TYPE, optional
-        DESCRIPTION. The default is 1.
+    df : dataframe
+    subgroups : List
+        subgroups of referrals that you would like to plot 
+        e.g. subgroups = [df['breaches'], df['within_standard']] will 
+        plot number of breached referrals and number within standard for your 
+        dataframe over time. 
+    labels : list
+        List of strings which correspond to the order of the subgroups. 
+        e.g. subgroups = [df['breaches'], df['within_standard']] 
+        then labels = ['Breaches', 'Within Standard']
+    ncol : interger
+        The number of subgroups 
+    graph_title : string 
+        Title of the graph e.g. graph_title = "Cancer referrals in dataframe"
+    y_label: string 
+       Label of y axis
 
     Returns
     -------
-    fig : Time series figure
-    ax : axis on the figure
+    fig : Figure
+        Stacked plot 
+    ax : Axis
+        x axis will represent the index of dataframe which is time in months
+        y axis will represent the numbers in the subgroups
 
     """
-    
-    # selects figure size
-    fig = plt.figure(figsize=(12,3))
-    # select axis label 
+    # create figure and axis
+    fig = plt.figure(figsize=(12, 3))
     ax = fig.add_subplot()
-    ax.set_xlabel("Date", fontsize=12)
+   # set axis titles
+    ax.set_xlabel("Month", fontsize=12)
     ax.set_ylabel(y_label, fontsize=12)
-
-    # include x, y grid
-    ax.grid(ls='--')
-
-    # set size of x, y ticks
+  # set  x, y ticks
     ax.tick_params(axis='both', labelsize=12)
-
-    # create stacked plot
-    stk_plt = ax.stackplot(data['Month'],
-                           data.drop('Month',
-                           axis=1).T, labels=labels
-                           )
-    # add legend - matplotlib decides placement
-    ax.legend(loc=leg_loc, ncol=n_cols)
-            
+  # plot and label subgroups 
+    stk_plt = ax.stackplot(df.index,
+                           subgroups,
+                           labels=labels)
+    ax.legend(loc='lower center', ncol=ncol)
+    plt.title(graph_title)
     return fig, ax
-
 
 # ToDo for the functions below: display x-axis labels/ticks – currently not working/adding too many 
 # Add appropriate titles

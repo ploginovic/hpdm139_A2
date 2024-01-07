@@ -731,7 +731,7 @@ def help_with(topic=None):
                      + " individual providers (NHS trusts).\n "
                      + "Each NHS trust is represented by an org_code.\n"
                      + "To find an org_code for an individual trust the"
-                     + "function () can be used\n\n"
+                     + "function name_org_code() can be used\n\n"
                      )
 
     stage_or_route_info = ("Stage_or_route Information: \n"

@@ -6,7 +6,16 @@ commissioning_data_link = 'https://www.england.nhs.uk/statistics/wp-content/' \
     + 'uploads/sites/2/2023/11/' \
     + 'CWT-CRS-Commissioner-Time-Series-Jul-2022-Oct-2023-with-Revisions'
 
-
+def read_in_comminsioning():
+    
+# link to provider data set
+    com_data_link = r'https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2023/12/CWT-CRS-Commissioner-Time-Series-Jul-2022-Oct-2023-with-Revisions.xlsx'
+# assigns variable types and renames columns.
+    df = (pd.read_excel(com_data_link,
+                        sheet_name='28-DAY FDS',
+                       skiprows=range(0,4)))
+    return df
+    
 def get_commissioning_data(commissioning_data_link):
     """Parameters
     ----------
