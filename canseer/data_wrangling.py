@@ -429,7 +429,7 @@ def select_standard(df, standards):
     df = df[df['standard'].isin(standard_format)]
     return df
 
-def select_cancer(df, cancer_type_list):
+def select_cancer(df, cancer_type=[]):
     """
 
     Parameters
@@ -464,14 +464,14 @@ def select_cancer(df, cancer_type_list):
     df = df[df['cancer_type'].isin(cancer_type_list)]
     return df
 
-def select_treatment_modality(df, treatment_modality_list):
+def select_treatment_modality(df, treatment_modality):
     """
 
     Parameters
     ----------
     df : Dataframe
        Dataframe that requires filtering
-     treatment_modality_list: List of treatments that you wish to include
+     treatment_modality: A string or list of treatments that you wish to include
         For example treatment_modality_list = ["surgery", "radiotherapy"]
         will includedata containing only surgery and radiotherapy.
 
@@ -486,15 +486,27 @@ def select_treatment_modality(df, treatment_modality_list):
         Dataframe containing the treatments in treatment_modality_list.
 
     """
+    error_value_message='One of the specified treatment_modality is not in the dataframe'
+    
+    if isinstance(treatment_modality, str):
+        
+        if treatment_modality not in df['treatment_modality'].unique():
+            raise ValueError(error_value_message)
+        
+        else:
+            df = df.loc[df.treatment_modality==treatment_modality]
+            return df
+            
 
-    # check to see if each treatment is not in the dataframe.
-    for treat in treatment_modality_list:
-        if not df['treatment_modality'].eq(treat).any():
-            raise ValueError(
-                'treatment modality in treatment_modality_list is not in the dataframe')
-            break
+    elif isinstance(treatment_modality, list):
+        # check to see if each treatment is not in the dataframe.
+        for treat in treatment_modality:
+            if not df['treatment_modality'].eq(treat).any():
+                print(f"Error occured with value '{treat}'")
+                raise ValueError(error_value_message)
+                break
     # Filter dataframe based on the list of treatment modalitys
-    df = df[df['treatment_modality'].isin(treatment_modality_list)]
+    df = df[df['treatment_modality'].isin(treatment_modality)]
     return df
 
 
@@ -731,7 +743,7 @@ def help_with(topic=None):
                      + " individual providers (NHS trusts).\n "
                      + "Each NHS trust is represented by an org_code.\n"
                      + "To find an org_code for an individual trust the"
-                     + "function name_org_code() can be used\n\n"
+                     + "function () can be used\n\n"
                      )
 
     stage_or_route_info = ("Stage_or_route Information: \n"
