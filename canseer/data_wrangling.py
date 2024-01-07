@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-def get_provider_cancer_waiting_times():
+def get_provider_data():
     """
     Parameters
     ----------
@@ -307,7 +307,7 @@ def get_national_62_day_standard():
     return df
 
 #### Filters ####
-def select_months(df, start_date,end_date):
+def select_months(df, start_date='2022-12-01', end_date='2023-01-01'):
     """
 
     Parameters
@@ -367,14 +367,16 @@ def select_org(df, org_list):
     df = df[df['org_code'].isin(org_list_format)]
     return df 
 
-def select_standard(df, standard_list):
+def select_standard(df, standards):
     """
 
     Parameters
     ----------
      df : Dataframe
        Dataframe that requires filtering
-    standard_list : List of standard that you wish to include from
+       
+    standard_list : A string or iterables (list) of standard that you wish to include from
+    
     FDS = Four week wait (28 days) from patient told they have cancer to cancer
     diagnosed or excluded.
     DTT = 31 days wait from decision to treat/ earliest clinically appropriate
@@ -399,20 +401,30 @@ def select_standard(df, standard_list):
     """
     # Dictionary of standard in the dataframe
     standard_dict = {'FDS': '28-day FDS',
-                     'DTT': '31-day Combined', 'RTT': '62-day Combined'}
+                     'DTT': '31-day Combined',
+                     'RTT': '62-day Combined'}
     standard_format = []
+    error_value_message = str('Standards in standard list is not FDS,'
+                        + 'DTT, or RTT\n'
+                        + 'See help_with("standards")'
+                        + 'or help(select_standard)')
+    
     # If standard not in dictionary raises error
-    for stan in standard_list:
-        if stan not in standard_dict:
-            raise ValueError(
-                'Standards in standard list is not FDS, DTT, or RTT'
-                'See help_with(standards) or help(select_standard)'
-            )
-            break
-    # If it is add the row value to the standard_format list 
-        else:
-            standard_format.append(standard_dict[stan])
-            continue
+    if isinstance(standards, str):
+        if standards in standard_dict:
+            standard_format.append(standard_dict[standards])
+        elif standards not in standard:
+            raise ValueError(error_value_message)
+
+    elif isinstance(standards, list):
+        for stan in standards:
+            if stan not in standard_dict:
+                raise ValueError(error_value_message)
+                break
+        # If it is add the row value to the standard_format list 
+            else:
+                standard_format.append(standard_dict[stan])
+                continue
     # Keep the rows which have a standard in the standard_format list
     df = df[df['standard'].isin(standard_format)]
     return df
@@ -520,7 +532,7 @@ def select_stage_or_route(df, stage_or_route_list):
     df = df[df['stage_or_route'].isin(stage_or_route_list)]
     return df
 
-def filter_data(df, filters):
+def filter_data(df, filters={}):
     """
 
     Parameters
@@ -824,7 +836,7 @@ def select_data(df, filters):
     Example:
     >>> data = pd.DataFrame({'MONTH': ['JAN', 'FEB', 'MAR', 'APR', 'MAY'],
     ...                      'ORG_CODE': ['R1K', 'R1K', 'R2K', 'R2K', 'R3K'],
-    ...                      'CANCER_TYPE': ['Breast', 'Lung', 'Breast', 'Lung', 'Breast'],
+    ...                      'cancer_type': ['Breast', 'Lung', 'Breast', 'Lung', 'Breast'],
     ...                      'STANDARD': ['28-day FDS', '31-day Combined', '62-day Combined', '28-day FDS', '31-day Combined'],
     ...                      'Value': [10, 15, 20, 25, 30]})
     >>> selected_data = select_data(data, [('month', 'mar'), ('org', 'r1k')])
@@ -841,20 +853,20 @@ def select_data(df, filters):
             if filter_value not in month_list:
                 raise ValueError("Invalid month abbreviation. Please enter a valid three-letter month abbreviation.")
 
-            df = df.loc[df['MONTH'] == filter_value]
+            df = df.loc[df['month'] == filter_value]
 
         elif filter_type == 'org':
             link_data = nhs_code_link()
-            valid_org = list(set(df['ORG_CODE']) & set(link_data['ORG_CODE']))
+            valid_org = list(set(df['org_code']) & set(link_data['org_code']))
             filter_value = filter_value[:3].upper()
 
             if filter_value not in valid_org:
                 raise ValueError("Organisation not found. Suggest exploring organisation table.")
 
-            df = df.loc[df['ORG_CODE'] == filter_value]
+            df = df.loc[df['org_code'] == filter_value]
 
         elif filter_type == 'cancer':
-            cancer_col_name = "CANCER_TYPE"
+            cancer_col_name = "cancer_type"
             cancer_type_dict = {i + 1: cancer_type for i, cancer_type in enumerate(df[cancer_col_name].unique())}
 
             if filter_value not in cancer_type_dict.keys():
@@ -867,9 +879,9 @@ def select_data(df, filters):
             standards_dict = {'FDS': '28-day FDS', 'DTT': '31-day Combined', "RTT": '62-day Combined'}
 
             if filter_value not in standards_dict.keys():
-                raise ValueError("See help_with(standards) or help(select_standard)")
+                raise ValueError("See help_with('standards') or help(select_standard)")
 
-            df = df.loc[df['STANDARD'] == standards_dict[filter_value]]
+            df = df.loc[df['standard'] == standards_dict[filter_value]]
 
         else:
             raise ValueError("Invalid filter type. Please choose 'month', 'org', 'cancer', or 'standard'.")
