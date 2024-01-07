@@ -53,6 +53,41 @@ def plot_stacked(data, labels, y_label, leg_loc='best', n_cols=1):
 # Add appropriate titles
 # Add national averages to compare with
 # Round the proportions displayed
+
+def prop_breaches_graph(df, filters, window_size):
+ # take the dataframe apply the filter function
+    df = filter_data(df, filters)
+# perform proportion_breaches function on the filtered dataset
+    df = proportion_breaches(df, window_size)
+# select national comparotor data based on the standard selected in filters
+    standard = filters.get('standard')
+    if 'FDS' in standard:
+        df_nat = get_national_28_day_standard()
+    elif 'DTT' in standard:
+        df_nat = get_national__31_day_standard()
+    elif 'RTT' in standard:
+        df_nat = get_national_62_day_standard()
+    else:
+        print('Standard not recognised')
+# apply the timeframe of the dataframe to national data
+    df_nat = df_nat.loc[(df_nat.index >= df.index[0])]
+    df_nat = df_nat.loc[(df_nat.index <= df.index[-1])]
+# run the proportion_breaches function on national data
+    df_nat = proportion_breaches(df_nat, window_size)
+# A very basic plot would be better to inset your plot from previous function here
+# or alternatively I can update my plot to be neater
+    x = df.index
+    y = df['proportion_breaches']
+    fig, ax = plt.subplots()
+    ax.plot(x, y)
+    x2 = df_nat.index
+    y2 = df_nat['proportion_breaches']
+    ax.plot(x2, y2)
+    ax.set(xlabel='Month', ylabel='Proportion of breaches',
+           title='Proportion of breaches over time')
+    ax.grid()
+    return fig, ax
+    
 def breaches_animated_plot(data, filters, window_size=5):
     """
     Create an animated plot with a moving average.
