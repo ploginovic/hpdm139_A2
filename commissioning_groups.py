@@ -1,5 +1,94 @@
 import pandas as pd
 import numpy as np
+
+
+commissioning_data_link = r'https://www.england.nhs.uk/statistics/wp-content/' \
+    + 'uploads/sites/2/2023/11/' \
+    + 'CWT-CRS-Commissioner-Time-Series-Jul-2022-Oct-2023-with-Revisions.xlsx'
+
+#Defining where to read data from as ICB/ODS code and Month columns are mismatched (indexes 4 and 3)
+ICB_row = 4
+Total_index = 3
+
+#Storing the duration of collected data (July 2022-November 2023) as a 'month' variable
+commissioning_months = pd.date_range(start= "2022-07", end="2023-11",freq = 'M')
+
+
+#Function to read 28 day sheet
+def read_commissioning_data(commissioning_data_link, sheet_name, commissioning_months, Total_index, ICB_row):
+    """
+    Parameters
+    ----------
+    commissioning_data_link : str
+        URL link to commissioning dataframe
+    sheet_name : str
+        Name of the sheet in the Excel file
+    commissioning_months : iterable
+        Iterable containing months to process
+    Total_index : int
+        Column index where 'Total' data starts
+    ICB_row : int
+        Row index where header is located
+
+    Returns
+    -------
+    DataFrame
+        Dataframe of commissioning standards sheet
+    """
+    df = pd.read_excel(commissioning_data_link, sheet_name=sheet_name, header=ICB_row)
+
+    #Loop organises data by list and month, 
+    #returning the number of 'within standard' and performance for each area and month.
+    processed_data = []
+
+    for i, month in enumerate(commissioning_months):
+        month_str = month.strftime('%Y-%m')
+        column_index = Total_index + i * 3
+
+        for _, row in df.iterrows():
+            area = row['Integrated Care Board (ICB) Commissioning Hub']
+            total = row[df.columns[column_index]]
+            within_standard = row[df.columns[column_index + 1]]
+            performance = row[df.columns[column_index + 2]]
+            processed_data.append({
+                'area': area,
+                'month': month_str,
+                'total': total,
+                'within_standard': within_standard,
+                'performance': performance
+            })
+    #processed_data list is converted to a dataframe
+    processed_df = pd.DataFrame(processed_data)
+    
+    # Replaces NaN values with 0
+    processed_df= processed_df.fillna(0,inplace=True)
+
+    # Assigns integer values to the columns
+    processed_df = processed_df.astype({
+        'total': np.int32, 
+        'within_standard': np.int32, 
+        'performance': np.int32
+    })
+    
+    # Converts 'month' to a datetime object
+    processed_df['month'] = pd.to_datetime(processed_df['month'], format='%Y-%m')
+
+    return processed_df
+
+#Creates a dataframe for each standard
+df_28_day = read_commissioning_data(
+    commissioning_data_link, '28-DAY FDS', commissioning_months, 'Total Told', 'Within Standard','Performance', ICB_row
+    )
+df_31_day = read_commissioning_data(
+    commissioning_data_link, '31-Day', commissioning_months, 'Total Treated', 'Within Standard', 'Performance', ICB_row
+    )
+df_62_day = read_commissioning_data(
+    commissioning_data_link, '62-Day', commissioning_months, 'Total Treated', 'Within Standard', 'Performance', ICB_row
+    )
+
+
+import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 commissioning_data_link = 'https://www.england.nhs.uk/statistics/wp-content/' \
