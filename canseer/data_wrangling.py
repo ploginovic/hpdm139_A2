@@ -490,15 +490,9 @@ def select_cancer(df, cancer_type, strict=False):
         Dataframe containing only cancer types in the cancer_type_list
 
     """
-<<<<<<< HEAD
     
     if isinstance(cancer_type, str):
         if not df['cancer_type'].eq(cancer_type).any():
-=======
-# check to see if each string in the cancer type list is in the dataframe.
-    for can in cancer_type:
-        if not df['cancer_type'].eq(can).any():
->>>>>>> 8db732c26c56c20b11e886b3b33cc10c9095098d
             raise ValueError(
                  f'Cancer type "{cancer_type}" are not in the dataframe')
         else:
