@@ -38,7 +38,7 @@ def get_provider_data():
     # Dictionary to rename values
     values_change = {
         'cancer_type': {
-            'Exhibited (non-cancer) breast symptoms - cancer'
+            'Exhibited (non-cancer) breast symptoms - cancer'\
             + ' not initially suspected': 'Unsuspected_breast_ca',
             'Missing or Invalid': 'Invalid',
             'Suspected breast cancer': 'Suspected_breast_ca',
@@ -79,8 +79,12 @@ def get_provider_data():
             'Surgery': 'surgery'
         },
         'stage_or_route': {
+<<<<<<< HEAD
             'BREAST SYMPTOMATIC,'
             + ' CANCER NOT SUSPECTED': 'breast_symptom_non_cancer',
+=======
+            'BREAST SYMPTOMATIC, CANCER NOT SUSPECTED': 'breast_symptom_non_cancer',
+>>>>>>> 8db732c26c56c20b11e886b3b33cc10c9095098d
             'NATIONAL SCREENING PROGRAMME': 'screening',
             'URGENT SUSPECTED CANCER': 'urgent_suspected_cancer',
             'First Treatment': 'first_treatment',
@@ -490,9 +494,15 @@ def select_cancer(df, cancer_type, strict=False):
         Dataframe containing only cancer types in the cancer_type_list
 
     """
+<<<<<<< HEAD
     
     if isinstance(cancer_type, str):
         if not df['cancer_type'].eq(cancer_type).any():
+=======
+# check to see if each string in the cancer type list is in the dataframe.
+    for can in cancer_type:
+        if not df['cancer_type'].eq(can).any():
+>>>>>>> 8db732c26c56c20b11e886b3b33cc10c9095098d
             raise ValueError(
                  f'Cancer type "{cancer_type}" are not in the dataframe')
         else:
