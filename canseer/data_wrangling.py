@@ -303,7 +303,6 @@ parse_dates=True)
                    'Within Standard.2': np.int32,
                    'Outside Standard.2': np.int32})
 .rename(columns=column_names)
-.assign(month=lambda x: pd.to_datetime(x['month']))
           )
     # drop the rows where there is month recorded but no data on referrals
 df = df.drop(df[df['total'] == 0].index)
