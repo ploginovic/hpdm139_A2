@@ -38,7 +38,7 @@ def get_provider_data():
     # Dictionary to rename values
     values_change = {
         'cancer_type': {
-            'Exhibited (non-cancer) breast symptoms - cancer'
+            'Exhibited (non-cancer) breast symptoms - cancer'\
             + ' not initially suspected': 'Unsuspected_breast_ca',
             'Missing or Invalid': 'Invalid',
             'Suspected breast cancer': 'Suspected_breast_ca',
@@ -79,8 +79,7 @@ def get_provider_data():
             'Surgery': 'surgery'
         },
         'stage_or_route': {
-            'BREAST SYMPTOMATIC,'
-            + 'CANCER NOT SUSPECTED': 'breast_symptom_non_cancer',
+            'BREAST SYMPTOMATIC, CANCER NOT SUSPECTED': 'breast_symptom_non_cancer',
             'NATIONAL SCREENING PROGRAMME': 'screening',
             'URGENT SUSPECTED CANCER': 'urgent_suspected_cancer',
             'First Treatment': 'first_treatment',
