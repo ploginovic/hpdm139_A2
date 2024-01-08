@@ -5,18 +5,22 @@ import matplotlib.pyplot as plt
 
 def get_provider_data():
     """
+    Returns the provider dataframe
+    
     Parameters
     ----------
     None
 
     Returns
     -------
-    df : Data frame which shows the provider i.e. NHS trust total number
+    df : Data frame
+    Dataframe shows the provider i.e. NHS trust total number
     of cancer diagnosis referrals, information about the referall (cancer type,
     stage/route, treatment modality) and for each standard (28, 31 and 62 days)
     the number of referrals meeting the standard and the number of breaches.
     Data is recorded for each month from April 2022 to March 2023.
     """
+    # link to national data set
     provider_data_link = r'https://www.england.nhs.uk/statistics/wp-content/' \
         + 'uploads/sites/2/2023/12/' \
         + 'CWT-CRS-2022-23-Data-Extract-Provider-Final.xlsx'
@@ -34,15 +38,18 @@ def get_provider_data():
     # Dictionary to rename values
     values_change = {
         'cancer_type': {
-            'Exhibited (non-cancer) breast symptoms - cancer not initially suspected': 'Unsuspected_breast_ca',
+            'Exhibited (non-cancer) breast symptoms - cancer'
+            + ' not initially suspected': 'Unsuspected_breast_ca',
             'Missing or Invalid': 'Invalid',
             'Suspected breast cancer': 'Suspected_breast_ca',
             'Suspected gynaecological cancer': 'Suspected_gynecological_ca',
             'Suspected lower gastrointestinal cancer': 'Suspected_lower_GI_ca',
             'Suspected acute leukaemia': 'Suspected_acute_leukaemia',
-            'Suspected brain/central nervous system tumours': 'Suspected_brain_CNS_ca',
+            'Suspected brain/central nervous system tumours':
+            'Suspected_brain_CNS_ca',
             "Suspected children's cancer": 'Suspected_children_ca',
-            'Suspected haematological malignancies (excluding acute leukaemia)': 'Suspected_hematological_ca',
+            'Suspected haematological malignancies'
+            + '(excluding acute leukaemia)': 'Suspected_hematological_ca',
             'Suspected head & neck cancer': 'Suspected_head_neck_ca',
             'Suspected lung cancer': 'Suspected_lung_ca',
             'Suspected other cancer': 'Suspected_other_ca',
@@ -50,7 +57,8 @@ def get_provider_data():
             'Suspected skin cancer': 'Suspected_skin_ca',
             'Suspected testicular cancer': 'Suspected_testicular_ca',
             'Suspected upper gastrointestinal cancer': 'Suspected_upper_GI_ca',
-            'Suspected urological malignancies (excluding testicular)': 'Suspected_urological_ca',
+            'Suspected urological malignancies'
+            + ' (excluding testicular)': 'Suspected_urological_ca',
             'Breast': 'Breast',
             'Gynaecological': 'Gynecological',
             'Haematological': 'Hematological',
@@ -61,15 +69,18 @@ def get_provider_data():
             'Skin': 'Skin',
             'Upper Gastrointestinal': 'Upper_GI',
             'Urological': 'Urological',
-            'ALL CANCERS': 'All_Cancers'},
+            'ALL CANCERS': 'All_Cancers'
+        },
         'treatment_modality': {
             'ALL MODALITIES': 'all',
             'Anti-cancer drug regimen': 'anticancer_drug',
             'Other': 'other',
             'Radiotherapy': 'radiotherapy',
-            'Surgery': 'surgery'},
+            'Surgery': 'surgery'
+        },
         'stage_or_route': {
-            'BREAST SYMPTOMATIC, CANCER NOT SUSPECTED': 'breast_symptom_non_cancer',
+            'BREAST SYMPTOMATIC,'
+            + 'CANCER NOT SUSPECTED': 'breast_symptom_non_cancer',
             'NATIONAL SCREENING PROGRAMME': 'screening',
             'URGENT SUSPECTED CANCER': 'urgent_suspected_cancer',
             'First Treatment': 'first_treatment',
@@ -77,7 +88,8 @@ def get_provider_data():
             'Breast Symptomatic': 'breast_symptom',
             'Consultant Upgrade': 'consultant_upgrade',
             'Screening': 'screening',
-            'Urgent Suspected Cancer': 'urgent_suspected_cancer'}
+            'Urgent Suspected Cancer': 'urgent_suspected_cancer'
+        }
     }
 
     # explain NaN value in treatment modality
@@ -118,14 +130,16 @@ def get_provider_data():
 
 def get_national_28_day_standard():
     """
+   Creates a national dataframe for the 28 day standard.
 
    Parameters
     ----------
-   None
+    None
 
     Returns
     -------
-    A data frame with national data for the 28 day standard which
+    df - Dataframe
+    Data frame with national data for the 28 day standard which
     reports the total referals, number of breaches and number within standard
     per month from April 2021 to October 2023. Organisation code for the
     national data set is recorded as NAT. Suitable to be appended to provider
@@ -152,11 +166,11 @@ def get_national_28_day_standard():
                                  'Outside Standard'],
                         index_col='Monthly',
                         parse_dates=True)
-           .astype({'Total': np.int32,
+          .astype({'Total': np.int32,
                    'Within Standard': np.int32,
                    'Outside Standard': np.int32})
           .rename(columns=column_names)
-         )
+          )
     # Add extra columns, Org code, Standard and Cancer_Type so details clear
     # if appended to provider data frame.
     df['org_code'] = 'NAT'
@@ -169,14 +183,15 @@ def get_national_28_day_standard():
                    cancer_type=lambda x: pd.Categorical(x['cancer_type']),
                    treatment_modality=lambda x: pd.Categorical(
         x['treatment_modality']),
-                   stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
+        stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
     )
-    df.index.name='month'
+    df.index.name = 'month'
     return df
-    
+
 
 def get_national_31_day_standard():
     """
+    Creates a national dataframe for the 31 day standard
 
    Parameters
     ----------
@@ -184,6 +199,7 @@ def get_national_31_day_standard():
 
     Returns
     -------
+    Df- Dataframe
     A data frame with national data for the 31 day standard which
     reports the total referals, number of breaches and number within standard
     per month from April 2022 to October 2023. Organisation code for the
@@ -213,7 +229,7 @@ def get_national_31_day_standard():
                                  'Total.1',
                                  'Within Standard.1',
                                  'Outside Standard.1',],
-                       index_col='Monthly', parse_dates=True)
+                        index_col='Monthly', parse_dates=True)
           .fillna(value=recoding)
           .astype({'Total.1': np.int32,
                    'Within Standard.1': np.int32,
@@ -236,19 +252,21 @@ def get_national_31_day_standard():
                        x['treatment_modality']),
                    stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
                    )
-    df.index.name='month'
+    df.index.name = 'month'
     return df
 
 
 def get_national_62_day_standard():
     """
-
+    Creates a national dataframe for the 62 day standard
+    
    Parameters
     ----------
     None
 
     Returns
     -------
+    Df - Dataframe
     A data frame with national data for the 62 day standard which
     reports the total referals, number of breaches and number within standard
     per month from April 2022 to March 2023. Organisation code for the
@@ -274,12 +292,12 @@ def get_national_62_day_standard():
     df = (pd.read_excel(national_data_link,
                         sheet_name="Monthly Performance",
                         skiprows=range(0, 3),
-                        usecols= ['Monthly',
+                        usecols=['Monthly',
                                  'Total.2',
                                  'Within Standard.2',
                                  'Outside Standard.2'],
-                       index_col='Monthly',
-                       parse_dates=True)
+                        index_col='Monthly',
+                        parse_dates=True)
           .fillna(value=recoding)
           .astype({'Total.2': np.int32,
                    'Within Standard.2': np.int32,
@@ -303,7 +321,7 @@ def get_national_62_day_standard():
                        x['treatment_modality']),
                    stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
                    )
-    df.index.name='month'
+    df.index.name = 'month'
     return df
 
 #### Filters ####
