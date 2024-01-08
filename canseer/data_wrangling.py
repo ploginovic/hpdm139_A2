@@ -470,7 +470,7 @@ def select_cancer(df, cancer_type=[]):
 
     """
 # check to see if each string in the cancer type list is in the dataframe.
-    for can in cancer_type_list:
+    for can in cancer_type:
         if not df['cancer_type'].eq(can).any():
             raise ValueError(
                 'Cancer types in cancer_type_list are not in the dataframe')
