@@ -80,7 +80,7 @@ def get_provider_data():
         },
         'stage_or_route': {
             'BREAST SYMPTOMATIC,'
-            + 'CANCER NOT SUSPECTED': 'breast_symptom_non_cancer',
+            + ' CANCER NOT SUSPECTED': 'breast_symptom_non_cancer',
             'NATIONAL SCREENING PROGRAMME': 'screening',
             'URGENT SUSPECTED CANCER': 'urgent_suspected_cancer',
             'First Treatment': 'first_treatment',
@@ -349,14 +349,14 @@ def select_months(df, start_date='2022-12-01', end_date='2023-01-01'):
                      & (df.index <= end_date)]
     return df
 
-def select_org(df, org_list):
+def select_org(df, orgs, strict=False):
     """
 
     Parameters
     ----------
-    df : Dataframe
+    - df : Dataframe
        Dataframe that requires filtering
-    org_list : List of org_codes that you wish to include
+    - org : String or list of org_codes that you wish to include
         For example org_list = ["R1K", "NAT"] will include data containing
         only provider "R1K" and "NAT" for the national data.
 
@@ -373,19 +373,32 @@ def select_org(df, org_list):
     """
     # Convert org list to uppercase and only use the first three characters
     org_list_format = []
-    for org in org_list:
-        org_list_format.append(org[:3].upper())
-    # check to see if each string in org list is in the dataframe
-    for org in org_list_format:
-        if not df['org_code'].eq(org).any():
+    if isinstance(orgs, str):
+        if not df['org_code'].eq(orgs).any():
             raise ValueError(
                 'Org code in org_list is not in the dataframe')
-            break
+        elif df['org_code'].eq(orgs).any():
+            org_list_format.append(org[:3].upper())
+    elif isinstance(orgs, list):
+
+        # check to see if each string in org list is in the dataframe
+        for org in orgs:
+            if not df['org_code'].eq(org[:3].upper()).any():
+                if strict:
+                    raise ValueError(
+                        'Org code in org_list is not in the dataframe')
+                    break
+                elif not strict:
+                    print(f'Value {org} was not in the list, continuing')
+                    continue
+            elif df['org_code'].eq(org[:3].upper()).any():
+                org_list_format.append(org[:3].upper())      
+                
     # Filter dataframe based on the list of org codes
     df = df[df['org_code'].isin(org_list_format)]
     return df 
 
-def select_standard(df, standards):
+def select_standard(df, standards, strict=False):
     """
 
     Parameters
@@ -393,7 +406,7 @@ def select_standard(df, standards):
      df : Dataframe
        Dataframe that requires filtering
        
-    standard_list : A string or iterables (list) of standard that you wish to include from
+    standard_list : A string or list of standard that you wish to include from
     
     FDS = Four week wait (28 days) from patient told they have cancer to cancer
     diagnosed or excluded.
@@ -437,27 +450,34 @@ def select_standard(df, standards):
     elif isinstance(standards, list):
         for stan in standards:
             if stan not in standard_dict:
-                raise ValueError(error_value_message)
-                break
+                if strict:
+                    raise ValueError(error_value_message)
+                    break
+                elif not strict:
+                    print(f'Value {stan} not found, continuing filtering for other')
+                    continue
+                    
         # If it is add the row value to the standard_format list 
-            else:
+            elif stand in standard_dict:
                 standard_format.append(standard_dict[stan])
                 continue
     # Keep the rows which have a standard in the standard_format list
     df = df[df['standard'].isin(standard_format)]
     return df
 
-def select_cancer(df, cancer_type=[]):
+def select_cancer(df, cancer_type, strict=False):
     """
 
     Parameters
     ----------
-    df : Dataframe
+    - df : Dataframe
         Dataframe which requires filtering
-    cancer_type_list : List 
+    - cancer_typet : List or Str 
         List of cancer types you wish to include in data frame.
         e.g. for all breast:
-            cancer_type_list = [Unsuspected_breast_ca', 'Suspected_breast_ca']
+            cancer_type = [Unsuspected_breast_ca', 'Suspected_breast_ca']
+    - strict: Bool (default = False)
+        If False, ignore incorrect/unexisting value types in the list
 
     Raises
     ------
@@ -470,17 +490,34 @@ def select_cancer(df, cancer_type=[]):
         Dataframe containing only cancer types in the cancer_type_list
 
     """
-# check to see if each string in the cancer type list is in the dataframe.
-    for can in cancer_type_list:
-        if not df['cancer_type'].eq(can).any():
+    
+    if isinstance(cancer_type, str):
+        if not df['cancer_type'].eq(cancer_type).any():
             raise ValueError(
-                'Cancer types in cancer_type_list are not in the dataframe')
-            break
+                 f'Cancer type "{cancer_type}" are not in the dataframe')
         else:
-            continue
-# filters the dataframe based on the cancer type list
-    df = df[df['cancer_type'].isin(cancer_type_list)]
-    return df
+            df = df.loc[df.cancer_type ==cancer_type]
+            return df
+        
+
+    elif isinstance(cancer_type, list):
+        # check to see if each string in the cancer type list is in the dataframe.
+        for can in cancer_type:
+            if not df['cancer_type'].eq(can).any():
+                if strict:
+                    raise ValueError(
+                        f'Cancer type "{cancer_type}" are not in the dataframe')
+                    break
+                if not strict:
+                    print(f'Error ocurred with value {can}, removing it and continuing')
+                    cancer_type.remove(can)
+                    continue
+            else:
+                continue
+                
+            # filters the dataframe based on the cancer type list
+        df = df[df['cancer_type'].isin(cancer_type)]
+        return df
 
 def select_treatment_modality(df, treatment_modality):
     """
