@@ -9,4 +9,4 @@ dependencies:
   - plotly
   - jupyterlab
   - seaborn
-prefix: /Users/student/anaconda3/envs/canseer_dev
+
