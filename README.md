@@ -2,7 +2,7 @@
 CANSEER  
 
 Description  
-Canseer is a toolkit which allows the user to analyse data from NHS statistics on adherence to cancer 
+Canseer is a toolkit which allows the user to analyse data from NHS statistics on adherence to cancer
 diagnosis standards. The data can be downloaded, presented in dataframe and filtered using our data wrangling functions. There are different tools which can be employed to visualise the data, to display both trends over time and geographical variation. 
 
 Motivation  
