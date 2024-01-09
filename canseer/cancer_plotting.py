@@ -298,14 +298,15 @@ def select_to_plot(data, gdf=None, filters=None, start_month='2022-04-01',
     data : DataFrame
         The input DataFrame containing the data to be filtered and plotted.
     gdf : GeoDataFrame, optional
-        The GeoDataFrame representing the geographical data for mapping. Default is None.
+        The GeoDataFrame representing the geographical data
+        for mapping. Default is None.
     filters : dict, optional
-        A dictionary of filters to apply directly to the data. If provided, other filtering arguments are ignored.
-        Default is None.
+        A dictionary of filters to apply.
+        If provided, other filtering arguments ignored. Default is None.
     start_month : str, optional
-        The start month for filtering data. Format should be 'YYYY-MM'. Default is '2022-04-01'.
+        The start month for filtering data. Default is '2022-04-01'.
     end_month : str, optional
-        The end month for filtering data. Format should be 'YYYY-MM'. Default is '2023-03-01'.
+        The end month for filtering data. Default is '2023-03-01'.
     standard : str, optional
         The standard for filtering data. Default is 'FDS'.
     stage_or_route : str, optional
@@ -315,13 +316,16 @@ def select_to_plot(data, gdf=None, filters=None, start_month='2022-04-01',
     cancer_type : str, optional
         The cancer type for filtering data. Default is None.
     return_filtered : bool, optional
-        If True, return the filtered DataFrame in addition to the mapped GeoDataFrame and labels.
+        If True, return the filtered DataFrame
+            in addition to the mapped GeoDataFrame and labels.
+            This can be useful for checking/more controls over data
         Default is False.
 
     Returns
     -------
     result : tuple
-        A tuple containing the mapped GeoDataFrame, labels for plotting, and optionally, the filtered DataFrame.
+        A tuple containing the mapped GeoDataFrame, labels for plotting,
+        and optionally, the filtered DataFrame.
 
     Notes
     -----
@@ -331,19 +335,28 @@ def select_to_plot(data, gdf=None, filters=None, start_month='2022-04-01',
 
     Examples
     --------
-    >>> select_to_plot(data, gdf, start_month='2022-04-01', end_month='2023-03-01', standard='FDS')
-    (<GeoDataFrame>, {'cancer_type': array([...]), 'period': array([...]), 'standard': array([...])})
+    >>> select_to_plot(data, gdf, start_month='2022-04-01',
+    ...                end_month='2023-03-01', standard='FDS'
+    ...                )
+    (<GeoDataFrame>, {'cancer_type': array([...]), 'period': array([...]), 
+                        standard': array([...])})
 
-    >>> select_to_plot(data, gdf, filters={'start_month': '2022-06-01', 'cancer_type': 'Breast'},
-    ...                return_filtered=True)
-    (<GeoDataFrame>, {'cancer_type': array([...]), 'period': array([...]), 'standard': array([...])},
-    <DataFrame>)
+    >>> select_to_plot(data, filters, return_filtered=True)
+    (<GeoDataFrame>, {'cancer_type': array([...])}, <DataFrame>)
     """
     if filters is None:
         # Create a dictionary with all arguments
         args_dict = locals()
-        keywords = {'start_month', 'end_month', 'standard', 'stage_or_route', 'treatment', 'cancer_type'}
-        filter_dict = {key: value for key, value in args_dict.items() if key in keywords and value is not None}
+        keywords = {'start_month', 'end_month',
+                    'standard', 'stage_or_route',
+                    'treatment', 'cancer_type'
+                   }
+        filter_dict = ({key: value for key, value
+                        in args_dict.items()
+                        if key in keywords and value is not None
+                       }
+                      )
+        
     elif filters is not None:
         filter_dict = filters
 
@@ -377,7 +390,8 @@ def select_to_plot(data, gdf=None, filters=None, start_month='2022-04-01',
     
 def format_map_label(label_dict):
     """
-    Format a label for an Integrated Care Board (ICB) map based on the provided information.
+    Format a label for an Integrated Care Board (ICB) map based
+        on the provided information.
 
     Parameters
     ----------
@@ -392,17 +406,20 @@ def format_map_label(label_dict):
 
     Notes
     -----
-    - 'period' key should contain a list of Timestamps representing the time period.
+    - 'period' key should contain a list of Timestamps representing
+        the time period.
     - 'cancer_type' key should contain a list of cancer types.
     - 'standard' key should contain a list with the standard information.
 
     Examples
     --------
-    >>> label_dict = {'period': [pd.Timestamp('2022-04-01'), pd.Timestamp('2023-03-01')],
+    >>> label_dict = {'period': [pd.Timestamp('2022-04-01'),
+    ...               pd.Timestamp('2023-03-01')],
     ...               'cancer_type': ['Breast', 'Lung'],
     ...               'standard': ['FDS']}
     >>> format_map_label(label_dict)
-    'ICB map for FDS standard.\nCancer types: Breast, Lung\nPeriod from April 2022 to March 2023'
+    'ICB map for FDS standard.\nCancer types:
+        Breast, Lung\nPeriod from April 2022 to March 2023'
     """
     start_date = label_dict['period'][0].strftime('%B %Y')
     end_date = label_dict['period'][-1].strftime('%B %Y')
@@ -428,7 +445,7 @@ def plot_icb_map(data, filters={'standard':'FDS'},
                  figsize=(7, 7), dpi=300,
                  edgecolor='black', lw=0.2):
     """
-    Plot an Integrated Care Board (ICB) map based on the specified filters.
+    Plot an Integrated Care Board (ICB) map based on specified filters.
 
     Parameters
     ----------
@@ -436,7 +453,7 @@ def plot_icb_map(data, filters={'standard':'FDS'},
         DataFrame containing the necessary data for mapping.
     filters : dict, optional
         Dictionary specifying filters for data selection.
-        Defaults to {'standard': 'FDS'}.
+        Defaults to {'standard': 'FDS'}. See filter_data()
     figsize : tuple, optional
         Tuple specifying the figure size. Defaults to (7, 7).
     dpi : int, optional
@@ -458,7 +475,8 @@ def plot_icb_map(data, filters={'standard':'FDS'},
     >>> plot_icb_map(data, filters={'standard': 'FDS'})
     """
     if filters is None:
-        print('Data filtering has been suppressed: "filters" is an empty dict. '
+        print('Data filtering has been suppressed: '
+              '"filters" is an empty dict. '
               'Continuing with default select_data() params')
         geodf, all_labels = select_data(data, filters=None)
     else:
@@ -472,7 +490,7 @@ def plot_icb_map(data, filters={'standard':'FDS'},
 
     fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
 
-    # Plot the GeoDataFrame with the specified colormap on the existing subplot 'ax'
+    # Plot the GeoDataFrame with specified colormap subplot 'ax'
     geodf.plot(column='proportion_breaches',
                cmap=create_cmap(threshold=threshold),
                legend=False, edgecolor=edgecolor, linewidth=lw, ax=ax)
@@ -484,14 +502,24 @@ def plot_icb_map(data, filters={'standard':'FDS'},
     cax = divider.append_axes("right", size="5%", pad=0.1)
 
     # Adjust the normalization based on the data range
-    sm = ScalarMappable(cmap=create_cmap(threshold=threshold), norm=Normalize(vmin=0, vmax=1))
+    sm = ScalarMappable(
+        cmap=create_cmap(threshold=threshold),
+        norm=Normalize(vmin=0, vmax=1)
+    )
     sm.set_array([])
-    plt.colorbar(sm, cax=cax, label=(("Proportion of Breaches\nNHS target threshold"
-                                      + f"for {filters['standard']} "
-                                      + f"(<{int(100*threshold)}% breaches)")))
+    plt.colorbar(sm, cax=cax,
+                 label=(("Proportion of Breaches\nNHS target threshold"
+                         + f"for {filters['standard']} "
+                         + f"(<{int(100*threshold)}% breaches)")
+                       )
+                )
 
-    ax.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=False)
-    ax.tick_params(axis='y', which='both', bottom=False, top=False, labelbottom=False)
+    ax.tick_params(axis='x', which='both', bottom=False,
+                   top=False, labelbottom=False
+                  )
+    ax.tick_params(axis='y', which='both',
+                   bottom=False, top=False, labelbottom=False
+                  )
 
     plt.show()
 
