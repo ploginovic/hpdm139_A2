@@ -7,4 +7,5 @@ dependencies:
   - conda=23.11.0
   - matplotlib
   - plotly
+  - jupyterlab
 prefix: /Users/student/anaconda3/envs/canseer_dev
