@@ -1,0 +1,12 @@
+name: canseer_dev
+channels:
+  - defaults
+dependencies:
+  - python==3.11.6
+  - numpy=1.25.0
+  - conda=23.11.0
+  - matplotlib
+  - plotly
+  - jupyterlab
+  - seaborn
+  - geopandas
