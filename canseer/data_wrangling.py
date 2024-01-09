@@ -3,53 +3,57 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+import pandas as pd
+import numpy as np
+
 def get_provider_data():
     """
- Returns the provider dataframe
- 
- Parameters
- ----------
- None
-
- Returns
- -------
- df : Data frame
- Dataframe shows the provider i.e. NHS trust total number
- of cancer diagnosis referrals, information about the referall (cancer type,
- stage/route, treatment modality) and for each standard (28, 31 and 62 days)
- the number of referrals meeting the standard and the number of breaches.
- Data is recorded for each month from April 2022 to March 2023.
- """
+    Returns the provider dataframe
+    
+    Parameters
+    ----------
+    None
+    
+    Returns
+    -------
+    df : Data frame
+        Dataframe shows the provider i.e. NHS trust total number
+        of cancer diagnosis referrals, information about the referral (cancer type,
+        stage/route, treatment modality) and for each standard (28, 31, and 62 days)
+        the number of referrals meeting the standard and the number of breaches.
+        Data is recorded for each month from April 2022 to March 2023.
+    """
     # link to national data set
-provider_data_link = r'https://www.england.nhs.uk/statistics/wp-content/' \
-+ 'uploads/sites/2/2023/12/' \
-+ 'CWT-CRS-2022-23-Data-Extract-Provider-Final.xlsx'
+    provider_data_link = (
+        r'https://www.england.nhs.uk/statistics/wp-content/'
+        'uploads/sites/2/2023/12/'
+        'CWT-CRS-2022-23-Data-Extract-Provider-Final.xlsx'
+    )
 
     # Dictionary to map old column names to new column names
-rename_cols = {'STANDARD': 'standard',
-                   'ORG CODE': 'org_code',
-                   'TOTAL': 'total',
-                   'CANCER TYPE': 'cancer_type',
-                   'STAGE/ROUTE': 'stage_or_route',
-                   'TREATMENT MODALITY': 'treatment_modality',
-                   'WITHIN STANDARD': 'within_standard',
-                   'BREACHES': 'breaches'}
+    rename_cols = {
+        'STANDARD': 'standard',
+        'ORG CODE': 'org_code',
+        'TOTAL': 'total',
+        'CANCER TYPE': 'cancer_type',
+        'STAGE/ROUTE': 'stage_or_route',
+        'TREATMENT MODALITY': 'treatment_modality',
+        'WITHIN STANDARD': 'within_standard',
+        'BREACHES': 'breaches'
+    }
 
     # Dictionary to rename values
-values_change = {
+    values_change = {
         'cancer_type': {
-            'Exhibited (non-cancer) breast symptoms - cancer'\
-+ ' not initially suspected': 'Unsuspected_breast_ca',
+            'Exhibited (non-cancer) breast symptoms - cancer not initially suspected': 'Unsuspected_breast_ca',
             'Missing or Invalid': 'Invalid',
             'Suspected breast cancer': 'Suspected_breast_ca',
             'Suspected gynaecological cancer': 'Suspected_gynecological_ca',
             'Suspected lower gastrointestinal cancer': 'Suspected_lower_GI_ca',
             'Suspected acute leukaemia': 'Suspected_acute_leukaemia',
-            'Suspected brain/central nervous system tumours':
-            'Suspected_brain_CNS_ca',
+            'Suspected brain/central nervous system tumours': 'Suspected_brain_CNS_ca',
             "Suspected children's cancer": 'Suspected_children_ca',
-            'Suspected haematological malignancies'
-+ '(excluding acute leukaemia)': 'Suspected_hematological_ca',
+            'Suspected haematological malignancies (excluding acute leukaemia)': 'Suspected_hematological_ca',
             'Suspected head & neck cancer': 'Suspected_head_neck_ca',
             'Suspected lung cancer': 'Suspected_lung_ca',
             'Suspected other cancer': 'Suspected_other_ca',
@@ -57,8 +61,7 @@ values_change = {
             'Suspected skin cancer': 'Suspected_skin_ca',
             'Suspected testicular cancer': 'Suspected_testicular_ca',
             'Suspected upper gastrointestinal cancer': 'Suspected_upper_GI_ca',
-            'Suspected urological malignancies'
-+ ' (excluding testicular)': 'Suspected_urological_ca',
+            'Suspected urological malignancies (excluding testicular)': 'Suspected_urological_ca',
             'Breast': 'Breast',
             'Gynaecological': 'Gynecological',
             'Haematological': 'Hematological',
@@ -79,52 +82,53 @@ values_change = {
             'Surgery': 'surgery'
         },
         'stage_or_route': {
-            ('BREAST SYMPTOMATIC, '
-+ 'CANCER NOT SUSPECTED'): 'breast_symptom_non_cancer',
- 'NATIONAL SCREENING PROGRAMME': 'screening',
- 'URGENT SUSPECTED CANCER': 'urgent_suspected_cancer',
- 'First Treatment': 'first_treatment',
- 'Subsequent Treatment': 'subsequent_treatment',
- 'Breast Symptomatic': 'breast_symptom',
- 'Consultant Upgrade': 'consultant_upgrade',
- 'Screening': 'screening',
- 'Urgent Suspected Cancer': 'urgent_suspected_cancer'
- }
- }
+            ('BREAST SYMPTOMATIC, CANCER NOT SUSPECTED'): 'breast_symptom_non_cancer',
+            'NATIONAL SCREENING PROGRAMME': 'screening',
+            'URGENT SUSPECTED CANCER': 'urgent_suspected_cancer',
+            'First Treatment': 'first_treatment',
+            'Subsequent Treatment': 'subsequent_treatment',
+            'Breast Symptomatic': 'breast_symptom',
+            'Consultant Upgrade': 'consultant_upgrade',
+            'Screening': 'screening',
+            'Urgent Suspected Cancer': 'urgent_suspected_cancer'
+        }
+    }
 
- # explain NaN value in treatment modality
-recode_nan = {'treatment_modality': 'not_applicable_FDS'}
- # read data from excel stating which columns to use, rename columns and
- # assign variable types
-df = (pd.read_excel(provider_data_link,
-usecols=['PERIOD',
- 'STANDARD',
- 'ORG CODE',
- 'TREATMENT MODALITY',
- 'CANCER TYPE',
- 'STAGE/ROUTE',
- 'TOTAL',
- 'WITHIN STANDARD',
-'BREACHES'],
-index_col='PERIOD',
-parse_dates=True)
-.rename(columns=rename_cols)
-.astype({
-              'total': np.int32,
-              'within_standard': np.int32,
-              'breaches': np.int32})
-.fillna(value=recode_nan)
-.assign(standard=lambda x: pd.Categorical(x['standard']),
-cancer_type=lambda x: pd.Categorical(x['cancer_type']),
-treatment_modality=lambda x: pd.Categorical(
-x['treatment_modality']),
-org_code=lambda x: pd.Categorical(x['org_code']),
-stage_or_route=lambda x: pd.Categorical(
-x['stage_or_route']))
-.replace(values_change)
-          )
-    # rename the index to month
-df.index.name = 'month'
+    # Explain NaN value in treatment modality
+    recode_nan = {'treatment_modality': 'not_applicable_FDS'}
+
+    # Read data from Excel stating which columns to use, rename columns and
+    # assign variable types
+    df = (
+        pd.read_excel(
+            provider_data_link,
+            usecols=['PERIOD', 'STANDARD', 'ORG CODE',
+                     'TREATMENT MODALITY', 'CANCER TYPE',
+                     'STAGE/ROUTE', 'TOTAL', 'WITHIN STANDARD', 'BREACHES'
+                    ],
+            index_col='PERIOD',
+            parse_dates=True
+        )
+        .rename(columns=rename_cols)
+        .astype({
+            'total': np.int32,
+            'within_standard': np.int32,
+            'breaches': np.int32
+        })
+        .fillna(value=recode_nan)
+        .assign(
+            standard=lambda x: pd.Categorical(x['standard']),
+            cancer_type=lambda x: pd.Categorical(x['cancer_type']),
+            treatment_modality=lambda x: pd.Categorical(x['treatment_modality']),
+            org_code=lambda x: pd.Categorical(x['org_code']),
+            stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
+        )
+        .replace(values_change)
+    )
+
+    # Rename the index to month
+    df.index.name = 'month'
+
     return df
 
 
