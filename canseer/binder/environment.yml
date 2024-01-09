@@ -1,4 +1,6 @@
 name: canseer_dev
 channels:
   - defaults
+dependencies:
+  - python=3.11.4
 prefix: /Users/student/anaconda3/envs/canseer_dev
