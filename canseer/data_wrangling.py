@@ -3,9 +3,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-import pandas as pd
-import numpy as np
-
 def get_provider_data():
     """
     Returns the provider dataframe
@@ -493,7 +490,7 @@ def select_standard(df, standards, strict=False):
                     continue
                     
         # If it is add the row value to the standard_format list 
-            elif stand in standard_dict:
+            elif stan in standard_dict:
                 standard_format.append(standard_dict[stan])
                 continue
     # Keep the rows which have a standard in the standard_format list
@@ -680,8 +677,7 @@ def filter_data(df, filters={}):
         df = df.loc[(df.index <= filters.get('end_month'))]
 
     if 'standard' in filters:
-        standard_list = filters.get('standard')
-        df = select_standard(df, standard_list)
+        df = select_standard(df, filters.get('standard') )
 
     if 'org' in filters:
         df = select_org(df, filters.get('org'))
