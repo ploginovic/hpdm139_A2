@@ -20,7 +20,7 @@ def get_provider_data():
         the number of referrals meeting the standard and the number of breaches.
         Data is recorded for each month from April 2022 to March 2023.
     """
-    # link to national data set
+    # link to provider data set
     provider_data_link = (
         r'https://www.england.nhs.uk/statistics/wp-content/'
         'uploads/sites/2/2023/12/'
