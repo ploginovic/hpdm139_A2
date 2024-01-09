@@ -604,9 +604,9 @@ def select_treatment_modality(df, treatment_modality, strict=False):
     return df
 
 
-def select_stage_or_route(df, stage_or_route_list):
+def select_stage_or_route(df, stage_or_route):
     """
-
+    Filters data based on stage or route of referral. 
     Parameters
     ----------
     df : Dataframe
@@ -627,17 +627,39 @@ def select_stage_or_route(df, stage_or_route_list):
         Dataframe containing the routes or stage in stage_or_route_list
 
     """
-
-    # check to see if each treatment is not in the dataframe.
-    for stage in stage_or_route_list:
-        if not df['stage_or_route'].eq(stage).any():
-            raise ValueError(
-                'stage or route in stage_or_route_list is not in the dataframe')
-            break
-    # Filter dataframe based on the list of stage_or_route
-    df = df[df['stage_or_route'].isin(stage_or_route_list)]
+    error_value_message='One of the specified stage_or_route is not in the dataframe'
+    
+    # if one stage/route given, check to see if it is in the df  filter df based on that stage/route 
+    if isinstance(stage_or_route, str):
+        
+        if stage_or_route not in df['stage_or_route'].unique():
+            raise ValueError(error_value_message)
+     # filter df based on that stage/route   
+        else:
+            df = df.loc[df.stage_or_route==stage_or_route]
+            return df
+        
+     # If a list of stage/route is given    
+    elif isinstance(stage_or_route, list):
+        # check to see if each stage/route is not in the dataframe, raised error messages.
+        for stag in stage_or_route:
+            if not df['stage_or_route'].eq(stag).any():
+        # if criteria is strict stop function 
+                if strict:
+                    print(f"Error occured with value '{stag}'")
+                    raise ValueError(error_value_message)
+                    break
+        # if criteria is not strict continue with the function 
+                elif not strict:
+                    print((f"Value '{stag}' not in df, "
+                           + "continuing without it"))
+                    stage_or_route.remove(stag)
+                    continue
+                        
+    # Filter dataframe based on the list of treatment modalitys
+    df = df[df['stage_or_route'].isin(stage_or_route)]
     return df
-
+    
 def filter_data(df, filters={}):
     """
 
