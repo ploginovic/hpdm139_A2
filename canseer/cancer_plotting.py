@@ -2,7 +2,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
-from data_wrangling import select_data
+#from data_wrangling import select_data
+from data_wrangling import filter_data
+from data_wrangling import proportion_breaches
 
 def plot_stacked_referrals(df, subgroups, labels, ncol, graph_title, y_label):
     """
@@ -56,7 +58,9 @@ def plot_stacked_referrals(df, subgroups, labels, ncol, graph_title, y_label):
 # Add national averages to compare with
 # Round the proportions displayed
 
-def prop_breaches_graph(df, filters, window_size):
+def prop_breaches_graph(df, filters={'start_month':'05-2022',
+                                     'end_month':'05-2022',
+                                     'standard':'FDS'}, window_size=1):
  # take the dataframe apply the filter function
     df = filter_data(df, filters)
 # perform proportion_breaches function on the filtered dataset
@@ -151,4 +155,5 @@ def breaches_animated_plot(data, filters, window_size=5):
     # Show the interactive plot
     fig.show()
 
+    
 

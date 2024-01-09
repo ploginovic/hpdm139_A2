@@ -362,7 +362,7 @@ def get_national_62_day_standard():
     return df
 
 #### Filters ####
-def select_months(df, start_date='2022-12-01', end_date='2023-01-01'):
+def select_months(df, start_date='2022-04-01', end_date='2023-03-01'):
     """
     Parameters
     ----------
