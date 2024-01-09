@@ -5,4 +5,5 @@ dependencies:
   - python=3.11.4
   - numpy=1.25.0
   - conda=23.11.0
+  - matplotlib
 prefix: /Users/student/anaconda3/envs/canseer_dev
