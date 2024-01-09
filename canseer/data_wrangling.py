@@ -128,225 +128,257 @@ df.index.name = 'month'
     return df
 
 
+import pandas as pd
+import numpy as np
+
 def get_national_28_day_standard():
     """
- Creates a national dataframe for the 28 day standard.
+    Creates a national dataframe for the 28 day standard.
 
- Parameters
- ----------
- None
+    Parameters
+    ----------
+    None
 
- Returns
- -------
- df - Dataframe
- Data frame with national data for the 28 day standard which
- reports the total referals, number of breaches and number within standard
- per month from April 2021 to October 2023. Organisation code for the
- national data set is recorded as NAT. Suitable to be appended to provider
- data.
+    Returns
+    -------
+    df - Dataframe
+        Data frame with national data for the 28 day standard which
+        reports the total referrals, number of breaches, and number within standard
+        per month from April 2021 to October 2023. Organisation code for the
+        national data set is recorded as NAT. Suitable to be appended to provider
+        data.
 
- """
-# link to national data set
-national_data_link = r'https://www.england.nhs.uk/statistics/wp-content/' \
-+ 'uploads/sites/2/2023/12/' \
-+ 'CWT-CRS-National-Time-Series-Oct-2009-Oct-2023-with-'\
-+ 'Revisions.xlsx'
-    # Dictionary of columns to rename
-column_names = {'Outside Standard': 'breaches',
-                    'Within Standard': 'within_standard',
-                    'Total': 'total'}
-# read the excel file, including specific sheet number and columns required,
-# assigns variable types and renames columns.
-df = (pd.read_excel(national_data_link,
-sheet_name="Monthly Performance",
-skiprows=range(0, 3),
-usecols=['Monthly',
-                                 'Total',
-                                 'Within Standard',
-                                 'Outside Standard'],
-index_col='Monthly',
-parse_dates=True)
-.astype({'Total': np.int32,
-                   'Within Standard': np.int32,
-                   'Outside Standard': np.int32})
-.rename(columns=column_names)
-          )
-    # Add extra columns, Org code, Standard and Cancer_Type so details clear
-    # if appended to provider data frame.
-df['org_code'] = 'NAT'
-df['standard'] = '28-day FDS'
-df['cancer_type'] = 'all_national_data'
-df['treatment_modality'] = 'not_applicable_FDS'
-df['stage_or_route'] = 'not_applicable_national_data'
-df = df.assign(org_code=lambda x: pd.Categorical(x['org_code']),
-standard=lambda x: pd.Categorical(x['standard']),
-cancer_type=lambda x: pd.Categorical(x['cancer_type']),
-treatment_modality=lambda x: pd.Categorical(
-x['treatment_modality']),
-stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
+    """
+    # link to national data set
+    national_data_link = (
+        r'https://www.england.nhs.uk/statistics/wp-content/'
+        'uploads/sites/2/2023/12/'
+        'CWT-CRS-National-Time-Series-Oct-2009-Oct-2023-with-'
+        'Revisions.xlsx'
     )
-df.index.name = 'month'
+    
+    # Dictionary of columns to rename
+    column_names = {
+        'Outside Standard': 'breaches',
+        'Within Standard': 'within_standard',
+        'Total': 'total'
+    }
+    
+    # read the excel file, including a specific sheet number and columns required,
+    # assigns variable types, and renames columns.
+    df = (
+        pd.read_excel(
+            national_data_link,
+            sheet_name="Monthly Performance",
+            skiprows=range(0, 3),
+            usecols=['Monthly', 'Total', 'Within Standard', 'Outside Standard'],
+            index_col='Monthly',
+            parse_dates=True
+        )
+        .astype({'Total': np.int32, 'Within Standard': np.int32, 'Outside Standard': np.int32})
+        .rename(columns=column_names)
+    )
+
+    # Add extra columns, Org code, Standard, and Cancer_Type so details clear
+    # if appended to the provider data frame.
+    df['org_code'] = 'NAT'
+    df['standard'] = '28-day FDS'
+    df['cancer_type'] = 'all_national_data'
+    df['treatment_modality'] = 'not_applicable_FDS'
+    df['stage_or_route'] = 'not_applicable_national_data'
+    
+    df = df.assign(
+        org_code=lambda x: pd.Categorical(x['org_code']),
+        standard=lambda x: pd.Categorical(x['standard']),
+        cancer_type=lambda x: pd.Categorical(x['cancer_type']),
+        treatment_modality=lambda x: pd.Categorical(x['treatment_modality']),
+        stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
+    )
+    
+    df.index.name = 'month'
+    
     return df
 
+
+import pandas as pd
+import numpy as np
 
 def get_national_31_day_standard():
     """
- Creates a national dataframe for the 31 day standard
+    Creates a national dataframe for the 31 day standard
 
- Parameters
- ----------
- None
+    Parameters
+    ----------
+    None
 
- Returns
- -------
- Df- Dataframe
- A data frame with national data for the 31 day standard which
- reports the total referals, number of breaches and number within standard
- per month from April 2022 to October 2023. Organisation code for the
- national data set is recorded as NAT. Suitable to be appended to provider
- data.
+    Returns
+    -------
+    Df - Dataframe
+        A data frame with national data for the 31 day standard which
+        reports the total referrals, number of breaches, and number within standard
+        per month from April 2022 to October 2023. Organisation code for the
+        national data set is recorded as NAT. Suitable to be appended to provider
+        data.
 
- """
+    """
     # URL for national data
-national_data_link = r'https://www.england.nhs.uk/statistics/wp-content/'\
-+ 'uploads/sites/2/2023/12/' \
-+ 'CWT-CRS-National-Time-Series-Oct-2009-Oct-2023-with-'\
-+ 'Revisions.xlsx'
+    national_data_link = (
+        r'https://www.england.nhs.uk/statistics/wp-content/'
+        'uploads/sites/2/2023/12/'
+        'CWT-CRS-National-Time-Series-Oct-2009-Oct-2023-with-'
+        'Revisions.xlsx'
+    )
+    
     # Dictionary of columns to rename
-column_names = {'Outside Standard.1': 'breaches',
+    column_names = {'Outside Standard.1': 'breaches',
                     'Within Standard.1': 'within_standard',
                     'Total.1': 'total'}
-    # dictionary to recode NaN values as 0
-recoding = {'Total.1': 0,
+    
+    # Dictionary to recode NaN values as 0
+    recoding = {'Total.1': 0,
                 'Within Standard.1': 0,
                 'Outside Standard.1': 0}
-# read the excel file, including specific sheet number and columns required,
-# assigns variable types and renames columns, fills in NAN values.
-df = (pd.read_excel(national_data_link,
-sheet_name="Monthly Performance",
-skiprows=range(0, 3),
-usecols=['Monthly',
-                                 'Total.1',
-                                 'Within Standard.1',
-                                 'Outside Standard.1',],
-index_col='Monthly', parse_dates=True)
-.fillna(value=recoding)
-.astype({'Total.1': np.int32,
-                   'Within Standard.1': np.int32,
-                   'Outside Standard.1': np.int32})
-.rename(columns=column_names)
-          )
-    # drop the rows where there is month recorded but no data on referrals
-df = df.drop(df[df['total'] == 0].index)
-    # Add extra columns, Org code, Standard and Cancer_Type so details clear
-    # if appended to provider data frame.
-df['org_code'] = 'NAT'
-df['standard'] = '31-day Combined'
-df['cancer_type'] = 'all_national_data'
-df['treatment_modality'] = 'not_applicable_national_data'
-df['stage_or_route'] = 'not_applicable_national_data'
-df = df.assign(org_code=lambda x: pd.Categorical(x['org_code']),
-standard=lambda x: pd.Categorical(x['standard']),
-cancer_type=lambda x: pd.Categorical(x['cancer_type']),
-treatment_modality=lambda x: pd.Categorical(
-x['treatment_modality']),
-stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
-                   )
-df.index.name = 'month'
+    
+    # Read the excel file, including specific sheet number and columns required,
+    # assigns variable types, and renames columns, fills in NAN values.
+    df = (
+        pd.read_excel(
+            national_data_link,
+            sheet_name="Monthly Performance",
+            skiprows=range(0, 3),
+            usecols=['Monthly', 'Total.1', 'Within Standard.1', 'Outside Standard.1'],
+            index_col='Monthly',
+            parse_dates=True
+        )
+        .fillna(value=recoding)
+        .astype({'Total.1': np.int32, 'Within Standard.1': np.int32, 'Outside Standard.1': np.int32})
+        .rename(columns=column_names)
+    )
+
+    # Drop the rows where there is month recorded but no data on referrals
+    df = df.drop(df[df['total'] == 0].index)
+    
+    # Add extra columns, Org code, Standard, and Cancer_Type so details clear
+    # if appended to the provider data frame.
+    df['org_code'] = 'NAT'
+    df['standard'] = '31-day Combined'
+    df['cancer_type'] = 'all_national_data'
+    df['treatment_modality'] = 'not_applicable_national_data'
+    df['stage_or_route'] = 'not_applicable_national_data'
+    
+    df = df.assign(
+        org_code=lambda x: pd.Categorical(x['org_code']),
+        standard=lambda x: pd.Categorical(x['standard']),
+        cancer_type=lambda x: pd.Categorical(x['cancer_type']),
+        treatment_modality=lambda x: pd.Categorical(x['treatment_modality']),
+        stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
+    )
+    
+    df.index.name = 'month'
+    
     return df
 
 
+import pandas as pd
+import numpy as np
+
 def get_national_62_day_standard():
     """
- Creates a national dataframe for the 62 day standard
- 
- Parameters
- ----------
- None
+    Creates a national dataframe for the 62 day standard
+    
+    Parameters
+    ----------
+    None
 
- Returns
- -------
- Df - Dataframe
- A data frame with national data for the 62 day standard which
- reports the total referals, number of breaches and number within standard
- per month from April 2022 to March 2023. Organisation code for the
- national data set is recorded as NAT. Suitable to be appended to provider
- data.
+    Returns
+    -------
+    Df - Dataframe
+        A data frame with national data for the 62 day standard which
+        reports the total referrals, number of breaches, and number within standard
+        per month from April 2022 to March 2023. Organisation code for the
+        national data set is recorded as NAT. Suitable to be appended to provider
+        data.
 
- """
+    """
     # URL for national data
-national_data_link = r'https://www.england.nhs.uk/statistics/wp-content/'\
-+ 'uploads/sites/2/2023/12/' \
-+ 'CWT-CRS-National-Time-Series-Oct-2009-Oct-2023-with-'\
-+ 'Revisions.xlsx'
+    national_data_link = (
+        r'https://www.england.nhs.uk/statistics/wp-content/'
+        'uploads/sites/2/2023/12/'
+        'CWT-CRS-National-Time-Series-Oct-2009-Oct-2023-with-'
+        'Revisions.xlsx'
+    )
+    
     # Dictionary of columns to rename
-column_names = {'Outside Standard.2': 'breaches',
+    column_names = {'Outside Standard.2': 'breaches',
                     'Within Standard.2': 'within_standard',
                     'Total.2': 'total'}
-    # dictionary to recode NaN values as 0
-recoding = {'Total.2': 0,
+    
+    # Dictionary to recode NaN values as 0
+    recoding = {'Total.2': 0,
                 'Within Standard.2': 0,
                 'Outside Standard.2': 0}
-# read the excel file, including specific sheet number and columns required,
-# assigns variable types and renames columns.
-df = (pd.read_excel(national_data_link,
-sheet_name="Monthly Performance",
-skiprows=range(0, 3),
-usecols=['Monthly',
-                                 'Total.2',
-                                 'Within Standard.2',
-                                 'Outside Standard.2'],
-index_col='Monthly',
-parse_dates=True)
-.fillna(value=recoding)
-.astype({'Total.2': np.int32,
-                   'Within Standard.2': np.int32,
-                   'Outside Standard.2': np.int32})
-.rename(columns=column_names)
-          )
-    # drop the rows where there is month recorded but no data on referrals
-df = df.drop(df[df['total'] == 0].index)
-    # Add extra columns, Org code, Standard and Cancer_Type so details clear
-    # if appended to provider data frame.
-df['org_code'] = 'NAT'
-df['standard'] = '62-day Combined'
-df['cancer_type'] = 'all_national_data'
-df['treatment_modality'] = 'not_applicable_national_data'
-df['stage_or_route'] = 'not_applicable_national_data'
-df = df.assign(org_code=lambda x: pd.Categorical(x['org_code']),
-standard=lambda x: pd.Categorical(x['standard']),
-cancer_type=lambda x: pd.Categorical(x['cancer_type']),
-treatment_modality=lambda x: pd.Categorical(
-x['treatment_modality']),
-stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
-                   )
-df.index.name = 'month'
+    
+    # Read the excel file, including specific sheet number and columns required,
+    # assigns variable types and renames columns.
+    df = (
+        pd.read_excel(
+            national_data_link,
+            sheet_name="Monthly Performance",
+            skiprows=range(0, 3),
+            usecols=['Monthly', 'Total.2', 'Within Standard.2', 'Outside Standard.2'],
+            index_col='Monthly',
+            parse_dates=True
+        )
+        .fillna(value=recoding)
+        .astype({'Total.2': np.int32, 'Within Standard.2': np.int32, 'Outside Standard.2': np.int32})
+        .rename(columns=column_names)
+    )
+
+    # Drop the rows where there is month recorded but no data on referrals
+    df = df.drop(df[df['total'] == 0].index)
+    
+    # Add extra columns, Org code, Standard, and Cancer_Type so details clear
+    # if appended to the provider data frame.
+    df['org_code'] = 'NAT'
+    df['standard'] = '62-day Combined'
+    df['cancer_type'] = 'all_national_data'
+    df['treatment_modality'] = 'not_applicable_national_data'
+    df['stage_or_route'] = 'not_applicable_national_data'
+    
+    df = df.assign(
+        org_code=lambda x: pd.Categorical(x['org_code']),
+        standard=lambda x: pd.Categorical(x['standard']),
+        cancer_type=lambda x: pd.Categorical(x['cancer_type']),
+        treatment_modality=lambda x: pd.Categorical(x['treatment_modality']),
+        stage_or_route=lambda x: pd.Categorical(x['stage_or_route'])
+    )
+    
+    df.index.name = 'month'
+    
     return df
 
 #### Filters ####
 def select_months(df, start_date='2022-12-01', end_date='2023-01-01'):
     """
+    Parameters
+    ----------
+    df : Dataframe
+    start_date : string 
+        Format should be month-year 
+        e.g start date of April 2022 is start_date = '04-2022'
+    end_date : string 
+        Format should be month-year 
+        e.g end date of May 2022 is end_date = '05-2022'
 
- Parameters
- ----------
- df : Dataframe
- start_date : string 
- Format should be month-year 
- e.g start date of April 2022 is start_date = '04-2022'
- end_date :string 
- Format should be month-year 
- e.g end date of May 2022 is end_date = '05-2022'
-
- Returns
- -------
-    df: Dataframe 
-    Dataframe with referalls from start to end date.
-
+    Returns
+    -------
+    df : Dataframe 
+        Dataframe with referrals from start to end date.
     """
 
-    df = df.loc[(df.index >= start_date)
-                     & (df.index <= end_date)]
+    df = df.loc[(df.index >= start_date) & (df.index <= end_date)]
     return df
+
 
 def select_org(df, orgs, strict=False):
     """
