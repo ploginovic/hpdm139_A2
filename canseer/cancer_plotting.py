@@ -2,13 +2,20 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
-from matplotlib.colors import LinearSegmentedColormap
+
 import geopandas as gpd
+
+
+from matplotlib.colors import LinearSegmentedColormap
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+from matplotlib.cm import ScalarMappable
+from matplotlib.colors import Normalize
+
 
 #from data_wrangling import select_data
 from data_wrangling import filter_data
 from data_wrangling import proportion_breaches
-from data_wrangling import read_icb_sicb_coding, nhs_code_link()
+from data_wrangling import read_icb_sicb_coding, nhs_code_link
 
 
 def plot_stacked_referrals(df, subgroups, labels, ncol, graph_title, y_label):
@@ -204,37 +211,38 @@ def create_cmap(threshold=0.25):
     num_colors_above_inflection = 256 - num_colors_below_inflection
 
     # Create the colormap using LinearSegmentedColormap
-    cmap_below_inflection = LinearSegmentedColormap.from_list('below_inflection', colors_below_inflection, N=num_colors_below_inflection)
-    cmap_above_inflection = LinearSegmentedColormap.from_list('above_inflection', colors_above_inflection, N=num_colors_above_inflection)
+    cmap_below_inflection = LinearSegmentedColormap.from_list(
+        'below_inflection', colors_below_inflection, N=num_colors_below_inflection
+    )
+    
+    cmap_above_inflection = LinearSegmentedColormap.from_list(
+        'above_inflection', colors_above_inflection, N=num_colors_above_inflection
+    )
 
     # Combine the colormaps above and below the inflection point
-    cmap_custom = np.vstack((cmap_below_inflection(np.linspace(0, 1, num_colors_below_inflection)),
-                             cmap_above_inflection(np.linspace(0, 1, num_colors_above_inflection))))
+    cmap_custom = np.vstack(
+        (cmap_below_inflection(np.linspace(0, 1, num_colors_below_inflection)),
+         cmap_above_inflection(np.linspace(0, 1, num_colors_above_inflection)))
+    )
 
     # Create a custom colormap with an inflection point at the specified threshold
-    custom_cmap = LinearSegmentedColormap.from_list('custom_colormap', cmap_custom, N=256)
+    custom_cmap = LinearSegmentedColormap.from_list(
+        'custom_colormap', cmap_custom, N=256
+    )
     
     return custom_cmap
 
 def read_shapefile():
     
     """
-    Read and return a GeoDataFrame from an ONS shapefile for Integrated Care Boards (ICBs).
+    Read and return a GeoDataFrame from an ONS shapefile for
+        Integrated Care Boards (ICBs).
 
     Returns
     -------
     gdf : GeoDataFrame
-        A GeoDataFrame containing geographical information for Integrated Care Boards.
+        A GeoDataFrame containing geographical information for ICBs.
 
-    Notes
-    -----
-    - The function assumes a specific file structure and shapefile naming convention.
-    - The shapefile should include information about Integrated Care Boards boundaries.
-    - Ensure the GeoDataFrame contains relevant spatial and attribute data.
-
-    Examples
-    --------
-    N/A 
     """
     
     path_to_shapefile = ('data/ons_shapefile/'
@@ -417,7 +425,8 @@ def format_map_label(label_dict):
 
 
 def plot_icb_map(data, filters={'standard':'FDS'},
-                 figsize=(7, 7), dpi=300, edgecolor='black', lw=0.2):
+                 figsize=(7, 7), dpi=300,
+                 edgecolor='black', lw=0.2):
     """
     Plot an Integrated Care Board (ICB) map based on the specified filters.
 
@@ -433,7 +442,7 @@ def plot_icb_map(data, filters={'standard':'FDS'},
     dpi : int, optional
         Dots per inch for the figure resolution. Defaults to 300.
     edgecolor : str, optional
-        Color of the map boundaries. Defaults to 'black'.
+        Colour of the map boundaries. Defaults to 'black'.
     lw : float, optional
         Line width of the map boundaries. Defaults to 0.2.
 
