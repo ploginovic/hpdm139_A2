@@ -413,7 +413,7 @@ def select_org(df, orgs, strict=False):
             raise ValueError(
                 'Org code in org_list is not in the dataframe')
         elif df['org_code'].eq(orgs).any():
-            org_list_format.append(org[:3].upper())
+            org_list_format.append(orgs[:3].upper())
     elif isinstance(orgs, list):
 
         # check to see if each string in org list is in the dataframe
@@ -489,7 +489,7 @@ def select_standard(df, standards, strict=False):
                     raise ValueError(error_value_message)
                     break
                 elif not strict:
-                    print(f'Value {stan} not found, continuing filtering for other')
+                    print(f'Value "{stan}" not found, continuing filtering for other')
                     continue
                     
         # If it is add the row value to the standard_format list 
@@ -544,7 +544,7 @@ def select_cancer(df, cancer_type, strict=False):
                         f'Cancer type "{cancer_type}" are not in the dataframe')
                     break
                 if not strict:
-                    print(f'Error ocurred with value {can}, removing it and continuing')
+                    print(f'Error ocurred with value "{can}", removing it and continuing')
                     cancer_type.remove(can)
                     continue
             else:
@@ -554,7 +554,7 @@ def select_cancer(df, cancer_type, strict=False):
         df = df[df['cancer_type'].isin(cancer_type)]
         return df
 
-def select_treatment_modality(df, treatment_modality):
+def select_treatment_modality(df, treatment_modality, strict=False):
     """
 
     Parameters
@@ -592,9 +592,16 @@ def select_treatment_modality(df, treatment_modality):
         # check to see if each treatment is not in the dataframe.
         for treat in treatment_modality:
             if not df['treatment_modality'].eq(treat).any():
-                print(f"Error occured with value '{treat}'")
-                raise ValueError(error_value_message)
-                break
+                if strict:
+                    print(f"Error occured with value '{treat}'")
+                    raise ValueError(error_value_message)
+                    break
+                elif not strict:
+                    print((f"Value '{treat}' not in df, "
+                           + "continuing without it"))
+                    treatment_modality.remove(treat)
+                    continue
+                        
     # Filter dataframe based on the list of treatment modalitys
     df = df[df['treatment_modality'].isin(treatment_modality)]
     return df
