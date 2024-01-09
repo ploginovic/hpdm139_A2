@@ -9,5 +9,9 @@ dependencies:
   - plotly
   - jupyterlab
   - seaborn
+<<<<<<< HEAD
   - geopandas
 prefix: /Users/student/anaconda3/envs/canseer_dev
+=======
+
+>>>>>>> f05cf00f24348602acf5ac84370ff080c73baeaa
