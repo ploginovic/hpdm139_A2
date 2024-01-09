@@ -25,14 +25,13 @@ This toolkit also uses data provided by the ONS to link NHS trust regions to geo
 
 ONS data - 
 
-How to install and run  
+# Installation   
 
  
 
-User guide  
+# User guide  
 
-This is provided in the Juptyer Notebook entitled *** 
+This is provided in the Juptyer Notebook entitled User guide.
 
-References  
 
  
