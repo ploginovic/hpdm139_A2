@@ -490,7 +490,7 @@ def select_standard(df, standards, strict=False):
                     continue
                     
         # If it is add the row value to the standard_format list 
-            elif stand in standard_dict:
+            elif stan in standard_dict:
                 standard_format.append(standard_dict[stan])
                 continue
     # Keep the rows which have a standard in the standard_format list
