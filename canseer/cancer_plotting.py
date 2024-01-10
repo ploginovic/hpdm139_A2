@@ -63,10 +63,10 @@ def plot_stacked_referrals(df, subgroups, labels, ncol, graph_title, y_label):
 
 def prop_breaches_graph(df, filters={'start_month': '05-2022',
                                      'end_month': '05-2022',
-                                     'standard': 'FDS'}, window_size=1):
+                                     'standard': 'FDS'}, labels=None):
     """
     Graph of proportion of breaches of filtered dataset compared to
-    moving average of national dataset
+    proportion of breaches of national dataset
     Parameters
     ----------
     - df : Dataframe
@@ -96,17 +96,22 @@ def prop_breaches_graph(df, filters={'start_month': '05-2022',
         For example if window size is 3, the moving average will be taken every
         3 months.
         The default is 1.
+      - labels - list 
+        labels the two line, the first corresponds to the filtered dataframe the second the 
+        National dataframe. 
+        for example labels = ['Referrals for DTT for surgery from RDE', 
+                              'National DTT standard']
 
     Returns
     -------
     - A graph with proportion of breaches for a provider NHS trust(s) dataframe
-    compared to the moving average Nationally for the same standard.
+    compared to the proportion of breaches nationally for the same standard.
 
     """
 # take the dataframe apply the filter function
     df = filter_data(df, filters)
 # perform proportion_breaches function on the filtered dataset
-    df = proportion_breaches(df, window_size)
+    df = proportion_breaches(df, window_size=1)
 # select national comparotor data based on the standard selected in filters
     standard = filters.get('standard')
     if 'FDS' in standard:
@@ -121,8 +126,8 @@ def prop_breaches_graph(df, filters={'start_month': '05-2022',
     df_nat = df_nat.loc[(df_nat.index >= df.index[0])]
     df_nat = df_nat.loc[(df_nat.index <= df.index[-1])]
 # run the proportion_breaches function on national data
-    df_nat = proportion_breaches(df_nat, window_size)
-# Plots the proportion of breaches
+    df_nat = proportion_breaches(df_nat, window_size=1)
+# Plots the proportion of breaches for df and national df
     x = df.index
     y = df['proportion_breaches']
     fig, ax = plt.subplots()
@@ -133,6 +138,7 @@ def prop_breaches_graph(df, filters={'start_month': '05-2022',
     ax.set(xlabel='Month', ylabel='Proportion of breaches',
            title='Proportion of breaches over time')
     ax.grid()
+    ax.legend(labels, loc='upper left', fontsize='8')
     return fig, ax
 
 
