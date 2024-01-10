@@ -496,25 +496,25 @@ def plot_icb_map(data, filters={'standard':'FDS'},
 
     Parameters
     ----------
-    data : DataFrame
+    - data : DataFrame
         DataFrame containing the necessary data for mapping.
-    filters : dict, optional
+    - filters : dict, optional
         Dictionary specifying filters for data selection.
         Defaults to {'standard': 'FDS'}. See filter_data()
-    figsize : tuple, optional
+    - figsize : tuple, optional
         Tuple specifying the figure size. Defaults to (7, 7).
-    dpi : int, optional
+    - dpi : int, optional
         Dots per inch for the figure resolution. Defaults to 300.
     edgecolor : str, optional
         Colour of the map boundaries. Defaults to 'black'.
-    lw : float, optional
+    - lw : float, optional
         Line width of the map boundaries. Defaults to 0.2.
 
     Returns
     -------
-    fig : matplotlib.figure.Figure
+    - fig : matplotlib.figure.Figure
         The created matplotlib Figure.
-    ax : matplotlib.axes._subplots.AxesSubplot
+    - ax : matplotlib.axes._subplots.AxesSubplot
         The created matplotlib AxesSubplot.
 
     Examples
@@ -563,7 +563,7 @@ def plot_icb_map(data, filters={'standard':'FDS'},
 
     ax.tick_params(axis='x', which='both', bottom=False,
                    top=False, labelbottom=False
-                  )
+                   )
     ax.tick_params(axis='y', which='both',
                    bottom=False, top=False, labelbottom=False
                   )
