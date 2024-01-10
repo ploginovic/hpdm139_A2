@@ -6,9 +6,9 @@ from matplotlib.colors import LinearSegmentedColormap
 import geopandas as gpd
 
 #from data_wrangling import select_data
-from data_wrangling import filter_data
-from data_wrangling import proportion_breaches
-from data_wrangling import read_icb_sicb_coding, nhs_code_link()
+from canseer.data_wrangling import filter_data
+from canseer.data_wrangling import proportion_breaches
+from canseer.data_wrangling import read_icb_sicb_coding, nhs_code_link()
 
 
 def plot_stacked_referrals(df, subgroups, labels, ncol, graph_title, y_label):
