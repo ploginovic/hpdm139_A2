@@ -302,13 +302,16 @@ def create_lookup_dict_icb():
     - icb_code_to_names : dict
         A dictionary mapping ICB 3-digit codes to ICB names.
     - org_to_hlhg : dict
-        A dictionary mapping NHS Trust organization codes to Higher Level Health Geography.
+        A dictionary mapping NHS Trust organization codes to 
+        Higher Level Health Geography.
 
     Notes
     -----
     - The function reads ICB and SICB coding from an external source.
-    - It also retrieves a link between NHS Trust organization codes and Higher Level Health Geography.
-    - The resulting dictionaries provide easy lookup for ICB codes and organizational information.
+    - It also retrieves a link between NHS Trust organization codes 
+      and Higher Level Health Geography.
+    - The resulting dictionaries provide easy lookup for ICB codes 
+       and organizational information.
 
     Examples
     --------
@@ -323,7 +326,8 @@ def create_lookup_dict_icb():
     icb_code_to_names = dict(zip(icb_codes['ICB22CDH'], icb_codes['ICB22NM']))
 
     # Creates dictionary of NHS Trust Org code to Higher Level Health Geography
-    org_to_hlhg = dict(zip(nhs_link['ORG_CODE'], nhs_link['Higher Level Health Geography']))
+    org_to_hlhg = dict(zip(nhs_link['ORG_CODE'], 
+                           nhs_link['Higher Level Health Geography']))
 
     return icb_code_to_names, org_to_hlhg
 
