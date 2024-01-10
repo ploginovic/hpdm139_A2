@@ -16,31 +16,31 @@ from data_wrangling import read_icb_sicb_coding, nhs_code_link
 
 def plot_stacked_referrals(df, subgroups, labels, ncol, graph_title, y_label):
     """
-
+    Returns stacked plot graph of number of referrals over time.
     Parameters
     ----------
-    df : dataframe
-    subgroups : List
-        subgroups of referrals that you would like to plot 
-        e.g. subgroups = [df['breaches'], df['within_standard']] will 
-        plot number of breached referrals and number within standard for your 
-        dataframe over time. 
-    labels : list
-        List of strings which correspond to the order of the subgroups. 
-        e.g. subgroups = [df['breaches'], df['within_standard']] 
+    - df : dataframe
+    - subgroups : List
+        subgroups of referrals that you would like to plot
+        e.g. subgroups = [df['breaches'], df['within_standard']] will
+        plot number of breached referrals and number within standard for your
+        dataframe over time.
+    - labels : list
+        List of strings which correspond to the order of the subgroups.
+        e.g. subgroups = [df['breaches'], df['within_standard']]
         then labels = ['Breaches', 'Within Standard']
-    ncol : interger
-        The number of subgroups 
-    graph_title : string 
+    - ncol : interger
+        The number of subgroups
+    - graph_title : string
         Title of the graph e.g. graph_title = "Cancer referrals in dataframe"
-    y_label: string 
+    - y_label: string
        Label of y axis
 
     Returns
     -------
-    fig : Figure
-        Stacked plot 
-    ax : Axis
+    - fig : Figure
+        Stacked plot
+    - ax : Axis
         x axis will represent the index of dataframe which is time in months
         y axis will represent the numbers in the subgroups
 
@@ -48,16 +48,17 @@ def plot_stacked_referrals(df, subgroups, labels, ncol, graph_title, y_label):
     # create figure and axis
     fig = plt.figure(figsize=(12, 3))
     ax = fig.add_subplot()
-   # set axis titles
+    #set axis titles
     ax.set_xlabel("Month", fontsize=12)
     ax.set_ylabel(y_label, fontsize=12)
-  # set  x, y ticks
+    #set  x, y ticks
     ax.tick_params(axis='both', labelsize=12)
-  # plot and label subgroups 
+    #plot and label subgroups
     stk_plt = ax.stackplot(df.index,
                            subgroups,
                            labels=labels)
     ax.legend(loc='lower center', ncol=ncol)
+    # add graph_title
     plt.title(graph_title)
     return fig, ax
 
