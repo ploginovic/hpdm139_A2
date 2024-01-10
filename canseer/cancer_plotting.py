@@ -450,6 +450,8 @@ def plot_icb_map(data, filters={'standard':'FDS'},
                  edgecolor='black', lw=0.2):
     """
     Plot an Integrated Care Board (ICB) map based on specified filters.
+    Colourmap is reflects which ICBs meet the NHS target for specific standard.
+
 
     Parameters
     ----------
@@ -489,7 +491,7 @@ def plot_icb_map(data, filters={'standard':'FDS'},
             threshold = 0.25
         elif filters['standard'] == 'DTT':
             threshold = 0.04
-        elif filters['standard'] == 'DTT':
+        elif filters['standard'] == 'RTT':
             threshold = 0.15
 
     fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
