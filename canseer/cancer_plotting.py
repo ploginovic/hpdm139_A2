@@ -91,13 +91,8 @@ def prop_breaches_graph(df, filters={'start_month': '05-2022',
         Only one standard should be compared.
         The default is {'start_month':'05-2022','end_month':'05-2022',
         'standard':'FDS'
-        - window_size : interger,
-        Window size for proportion of breaches moving average.
-        For example if window size is 3, the moving average will be taken every
-        3 months.
-        The default is 1.
       - labels - list 
-        labels the two line, the first corresponds to the filtered dataframe the second the 
+        labels of dataset the first corresponds to the filtered dataframe the second the 
         National dataframe. 
         for example labels = ['Referrals for DTT for surgery from RDE', 
                               'National DTT standard']
