@@ -7,7 +7,6 @@ from matplotlib.colors import LinearSegmentedColormap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Normalize
-#from data_wrangling import select_data
 from canseer.data_wrangling import filter_data
 from canseer.data_wrangling import proportion_breaches
 from canseer.data_wrangling import get_national_28_day_standard, get_national_31_day_standard, get_national_62_day_standard
