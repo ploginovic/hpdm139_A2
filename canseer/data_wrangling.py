@@ -782,7 +782,7 @@ def nhs_code_link():
     """
     
     link_data = (pd
-                 .read_csv("data/ods_data/geographic_etr.csv")
+                 .read_csv("canseer/data/ods_data/geographic_etr.csv")
                  .loc[:,
                       ['Organisation Code', 'Name','National Grouping',
                        'Higher Level Health Geography', 'Postcode']]
@@ -803,7 +803,7 @@ def read_icb_sicb_coding():
     pd.DataFrame: A DataFrame containing the mapping of Sub-ICB locations to
     Integrated Care Boards in England.
     """
-    icb_path = ('data/ons_shapefile/Sub_ICB_Locations_to'
+    icb_path = ('canseer/data/ons_shapefile/Sub_ICB_Locations_to'
                 + '_Integrated_Care_Boards_to_NHS_England'
                 + '_(Region)_(July_2022)_Lookup_in_England.csv')
     icb_codes = pd.read_csv(icb_path)

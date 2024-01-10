@@ -13,9 +13,9 @@ from matplotlib.colors import Normalize
 
 
 #from data_wrangling import select_data
-from data_wrangling import filter_data
-from data_wrangling import proportion_breaches
-from data_wrangling import read_icb_sicb_coding, nhs_code_link
+from canseer.data_wrangling import filter_data
+from canseer.data_wrangling import proportion_breaches
+from canseer.data_wrangling import read_icb_sicb_coding, nhs_code_link
 
 
 def plot_stacked_referrals(df, subgroups, labels, ncol, graph_title, y_label):
@@ -245,7 +245,7 @@ def read_shapefile():
 
     """
     
-    path_to_shapefile = ('data/ons_shapefile/'
+    path_to_shapefile = ('canseer/data/ons_shapefile/'
                          + 'Integrated_Care_Boards_'
                          + 'April_2023_EN_BFC_1659257819249669363/')
     gdf = gpd.read_file(path_to_shapefile)
@@ -364,8 +364,12 @@ def select_to_plot(data, gdf=None, filters=None, start_month='2022-04-01',
 
     icb_code_to_names, org_to_hlhg = create_lookup_dict_icb()
 
-    filtered_df['hlhg'] = filtered_df['org_code'].map(org_to_hlhg)
-    filtered_df['ICB23NM'] = filtered_df['hlhg'].map(icb_code_to_names)
+    # Explicitly create a copy to avoid chained indexing
+    filtered_df = filtered_df.copy()
+
+    # Use .loc to modify the original DataFrame
+    filtered_df.loc[:, 'hlhg'] = filtered_df.loc[:, 'org_code'].map(org_to_hlhg)
+    filtered_df.loc[:, 'ICB23NM'] = filtered_df.loc[:, 'hlhg'].map(icb_code_to_names)
 
     labels_for_plotting = {'cancer_type': filtered_df.cancer_type.unique(),
                            'period': filtered_df.index.unique(),
