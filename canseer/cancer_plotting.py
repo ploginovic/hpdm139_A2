@@ -143,7 +143,8 @@ def breaches_animated_plot(data, filters, window_size=5):
 
     Parameters:
     - data (pd.DataFrame): The input DataFrame containing the relevant columns.
-    - filters (list): A list of tuples specifying the filters to be applied to the data.
+    - filters (list): A list of tuples specifying the filters to be applied to 
+      the data.
     - window_size (int): The size of the moving average window.
 
     Returns:
@@ -160,10 +161,16 @@ def breaches_animated_plot(data, filters, window_size=5):
     fig = go.Figure()
 
     # Add a scatter plot for the proportion of breaches
-    fig.add_trace(go.Scatter(x=data['PERIOD'], y=data['PROPORTION_BREACHES'], mode='lines+markers', name='Proportion of Breaches'))
+    fig.add_trace(go.Scatter(x=data['PERIOD'],
+                             y=data['PROPORTION_BREACHES'],
+                             mode='lines+markers',
+                             name='Proportion of Breaches'))
 
     # Add a line plot for the moving average
-    fig.add_trace(go.Scatter(x=data['PERIOD'], y=data['MOVING_AVERAGE'], mode='lines', name=f'Moving Average (Window={window_size})'))
+    fig.add_trace(go.Scatter(x=data['PERIOD'],
+                             y=data['MOVING_AVERAGE'],
+                             mode='lines',
+                             name=f'Moving Average (Window={window_size})'))
 
     # Customize the layout
     fig.update_layout(
@@ -172,8 +179,10 @@ def breaches_animated_plot(data, filters, window_size=5):
         yaxis_title='Proportion of Breaches',
         hovermode='x',
         xaxis=dict(tickmode='array',
-                   tickvals=data['PERIOD'].astype(int) / 10**9,  # Convert datetime to timestamp in seconds
-                   ticktext=data['PERIOD'].dt.strftime('%b %Y'),  # Display months and years as tick labels
+                   # Convert datetime to timestamp in seconds
+                   tickvals=data['PERIOD'].astype(int) / 10**9,
+                   # Display months and years as tick labels
+                   ticktext=data['PERIOD'].dt.strftime('%b %Y'),
                    ),
         updatemenus=[dict(
             type='buttons',
@@ -181,9 +190,11 @@ def breaches_animated_plot(data, filters, window_size=5):
             buttons=[dict(
                 label='Play',
                 method='animate',
-                args=[None, dict(frame=dict(duration=500, redraw=True), fromcurrent=True)])
-            ])
-        ])
+                args=[None,
+                      dict(frame=dict(duration=500, redraw=True),
+                           fromcurrent=True)])
+                     ])
+                     ])
 
     # Create animation frames
     frames = [go.Frame(data=[go.Scatter(x=data['PERIOD'].iloc[:i + 1],
@@ -198,20 +209,19 @@ def breaches_animated_plot(data, filters, window_size=5):
     # Show the interactive plot
     fig.show()
 
-    
 def create_cmap(threshold=0.25):
     """
     Create a custom colormap with an inflection point.
 
     Parameters
     ----------
-    threshold : float, optional
+    - threshold : float, optional
         The threshold value at which the color transitions from green to red.
         Should be between 0 and 1. Default is 0.25.
 
     Returns
     -------
-    custom_cmap : matplotlib.colors.LinearSegmentedColormap
+    - custom_cmap : matplotlib.colors.LinearSegmentedColormap
         A custom colormap with an inflection point at the specified threshold.
         The colormap transitions from green to red below the threshold and
         includes additional colors above the threshold.
@@ -231,8 +241,11 @@ def create_cmap(threshold=0.25):
     <matplotlib.colors.LinearSegmentedColormap object at 0x...>
     """
     # Define colors for the colormap
-    colors_below_inflection = [(0.0, 0.7, 0.0, 1), (1.0, 0.85, 0.0, 1)]
-    colors_above_inflection = [(1.0, 0, 0, 0.5), (0.75, 0, 0, 1), (0.7, 0, 0.7, 1)]
+    colors_below_inflection = [(0.0, 0.7, 0.0, 1),
+                               (1.0, 0.85, 0.0, 1)]
+    colors_above_inflection = [(1.0, 0, 0, 0.5),
+                               (0.75, 0, 0, 1),
+                               (0.7, 0, 0.7, 1)]
 
     # Define where to change from green to red. This will change by standard
     inflection = threshold
@@ -244,7 +257,7 @@ def create_cmap(threshold=0.25):
     # Create the colormap using LinearSegmentedColormap
     cmap_below_inflection = LinearSegmentedColormap.from_list(
         'below_inflection', colors_below_inflection, N=num_colors_below_inflection
-    )
+     )
     
     cmap_above_inflection = LinearSegmentedColormap.from_list(
         'above_inflection', colors_above_inflection, N=num_colors_above_inflection
@@ -260,7 +273,7 @@ def create_cmap(threshold=0.25):
     custom_cmap = LinearSegmentedColormap.from_list(
         'custom_colormap', cmap_custom, N=256
     )
-    
+
     return custom_cmap
 
 def read_shapefile():
