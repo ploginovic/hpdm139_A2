@@ -973,3 +973,32 @@ def help_with(topic=None):
 
     elif topic.lower() == "within_standard":
         print(within_standard_info)
+
+##### Proportion of breaches ##### 
+
+def proportion_breaches(df, window_size=1):
+    """
+    Creates a proportion_breaches column in dataframe and a moving average
+
+    Parameters
+    ----------
+    - df : dataframe
+        Dataframe of cancer referrals 
+    - window_size : interger , optional
+        Window size over which moving avergae is taken
+        For example if window size is 3 moving average taken every 3 months.
+        The default is 1.
+
+    Returns
+    -------
+    - Df dataframe 
+    Datafrane with proportion of breaches and moving average. 
+
+    """
+    # Calculate the proportion of breaches
+    df['PROPORTION_BREACHES'] = df['BREACHES'] / df['TOTAL']
+
+# Create a sliding window to calculate the moving average of the proportion of breaches
+    df['MOVING_AVERAGE'] = df['PROPORTION_BREACHES'].rolling(window=window_size).mean()
+    
+    return df
