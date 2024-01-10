@@ -411,8 +411,12 @@ def select_to_plot(data, gdf=None, filters=None, start_month='2022-04-01',
 
     icb_code_to_names, org_to_hlhg = create_lookup_dict_icb()
 
-    filtered_df['hlhg'] = filtered_df['org_code'].map(org_to_hlhg)
-    filtered_df['ICB23NM'] = filtered_df['hlhg'].map(icb_code_to_names)
+    # Explicitly create a copy to avoid chained indexing
+    filtered_df = filtered_df.copy()
+
+    # Use .loc to modify the original DataFrame
+    filtered_df.loc[:, 'hlhg'] = filtered_df.loc[:, 'org_code'].map(org_to_hlhg)
+    filtered_df.loc[:, 'ICB23NM'] = filtered_df.loc[:, 'hlhg'].map(icb_code_to_names)
 
     labels_for_plotting = {'cancer_type': filtered_df.cancer_type.unique(),
                            'period': filtered_df.index.unique(),
@@ -493,6 +497,8 @@ def plot_icb_map(data, filters={'standard':'FDS'},
                  edgecolor='black', lw=0.2):
     """
     Plot an Integrated Care Board (ICB) map based on specified filters.
+    Colourmap is reflects which ICBs meet the NHS target for specific standard.
+
 
     Parameters
     ----------
@@ -532,7 +538,7 @@ def plot_icb_map(data, filters={'standard':'FDS'},
             threshold = 0.25
         elif filters['standard'] == 'DTT':
             threshold = 0.04
-        elif filters['standard'] == 'DTT':
+        elif filters['standard'] == 'RTT':
             threshold = 0.15
 
     fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
