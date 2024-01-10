@@ -277,18 +277,16 @@ def create_cmap(threshold=0.25):
     return custom_cmap
 
 def read_shapefile():
-    
     """
     Read and return a GeoDataFrame from an ONS shapefile for
         Integrated Care Boards (ICBs).
 
     Returns
     -------
-    gdf : GeoDataFrame
+    - gdf : GeoDataFrame
         A GeoDataFrame containing geographical information for ICBs.
 
     """
-    
     path_to_shapefile = ('data/ons_shapefile/'
                          + 'Integrated_Care_Boards_'
                          + 'April_2023_EN_BFC_1659257819249669363/')
@@ -301,9 +299,9 @@ def create_lookup_dict_icb():
 
     Returns
     -------
-    icb_code_to_names : dict
+    - icb_code_to_names : dict
         A dictionary mapping ICB 3-digit codes to ICB names.
-    org_to_hlhg : dict
+    - org_to_hlhg : dict
         A dictionary mapping NHS Trust organization codes to Higher Level Health Geography.
 
     Notes
@@ -339,12 +337,12 @@ def select_to_plot(data, gdf=None, filters=None, start_month='2022-04-01',
 
     Parameters
     ----------
-    data : DataFrame
+    - data : DataFrame
         The input DataFrame containing the data to be filtered and plotted.
-    gdf : GeoDataFrame, optional
+    - gdf : GeoDataFrame, optional
         The GeoDataFrame representing the geographical data
         for mapping. Default is None.
-    filters : dict, optional
+    - filters : dict, optional
         A dictionary of filters to apply.
         If provided, other filtering arguments ignored. Default is None.
     start_month : str, optional
@@ -359,7 +357,7 @@ def select_to_plot(data, gdf=None, filters=None, start_month='2022-04-01',
         The treatment modality for filtering data. Default is None.
     cancer_type : str, optional
         The cancer type for filtering data. Default is None.
-    return_filtered : bool, optional
+    - return_filtered : bool, optional
         If True, return the filtered DataFrame
             in addition to the mapped GeoDataFrame and labels.
             This can be useful for checking/more controls over data
@@ -367,15 +365,16 @@ def select_to_plot(data, gdf=None, filters=None, start_month='2022-04-01',
 
     Returns
     -------
-    result : tuple
+    - result : tuple
         A tuple containing the mapped GeoDataFrame, labels for plotting,
         and optionally, the filtered DataFrame.
 
     Notes
     -----
-    - If filters is provided, other filtering arguments are ignored.
-    - The function calculates proportions of breaches for each ICB23NM category.
-    - The GeoDataFrame is merged with the proportions of breaches based on ICB23NM.
+    - If filters is provided, other filtering arguments are ignored
+    - The function calculates proportions of breaches for each ICB23NM category
+    - The GeoDataFrame is merged with the proportions of breaches based on 
+    ICB23NM.
 
     Examples
     --------
