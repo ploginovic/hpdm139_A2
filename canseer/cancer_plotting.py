@@ -2,49 +2,45 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
-
 import geopandas as gpd
-
-
 from matplotlib.colors import LinearSegmentedColormap
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Normalize
-
-
 #from data_wrangling import select_data
 from canseer.data_wrangling import filter_data
 from canseer.data_wrangling import proportion_breaches
+from canseer.data_wrangling import get_national_28_day_standard, get_national_31_day_standard, get_national_62_day_standard
 from canseer.data_wrangling import read_icb_sicb_coding, nhs_code_link
 
 
 def plot_stacked_referrals(df, subgroups, labels, ncol, graph_title, y_label):
     """
-
+    Returns stacked plot graph of number of referrals over time.
     Parameters
     ----------
-    df : dataframe
-    subgroups : List
-        subgroups of referrals that you would like to plot 
-        e.g. subgroups = [df['breaches'], df['within_standard']] will 
-        plot number of breached referrals and number within standard for your 
-        dataframe over time. 
-    labels : list
-        List of strings which correspond to the order of the subgroups. 
-        e.g. subgroups = [df['breaches'], df['within_standard']] 
+    - df : dataframe
+    - subgroups : List
+        subgroups of referrals that you would like to plot
+        e.g. subgroups = [df['breaches'], df['within_standard']] will
+        plot number of breached referrals and number within standard for your
+        dataframe over time.
+    - labels : list
+        List of strings which correspond to the order of the subgroups.
+        e.g. subgroups = [df['breaches'], df['within_standard']]
         then labels = ['Breaches', 'Within Standard']
-    ncol : interger
-        The number of subgroups 
-    graph_title : string 
+    - ncol : interger
+        The number of subgroups
+    - graph_title : string
         Title of the graph e.g. graph_title = "Cancer referrals in dataframe"
-    y_label: string 
+    - y_label: string
        Label of y axis
 
     Returns
     -------
-    fig : Figure
-        Stacked plot 
-    ax : Axis
+    - fig : Figure
+        Stacked plot
+    - ax : Axis
         x axis will represent the index of dataframe which is time in months
         y axis will represent the numbers in the subgroups
 
@@ -52,28 +48,63 @@ def plot_stacked_referrals(df, subgroups, labels, ncol, graph_title, y_label):
     # create figure and axis
     fig = plt.figure(figsize=(12, 3))
     ax = fig.add_subplot()
-   # set axis titles
+    #set axis titles
     ax.set_xlabel("Month", fontsize=12)
     ax.set_ylabel(y_label, fontsize=12)
-  # set  x, y ticks
+    #set  x, y ticks
     ax.tick_params(axis='both', labelsize=12)
-  # plot and label subgroups 
+    #plot and label subgroups
     stk_plt = ax.stackplot(df.index,
                            subgroups,
                            labels=labels)
     ax.legend(loc='lower center', ncol=ncol)
+    # add graph_title
     plt.title(graph_title)
     return fig, ax
 
-# ToDo for the functions below: display x-axis labels/ticks – currently not working/adding too many 
-# Add appropriate titles
-# Add national averages to compare with
-# Round the proportions displayed
+def prop_breaches_graph(df, filters={'start_month': '05-2022',
+                                     'end_month': '05-2022',
+                                     'standard': 'FDS'}, window_size=1):
+    """
+    Graph of proportion of breaches of filtered dataset compared to
+    moving average of national dataset
+    Parameters
+    ----------
+    - df : Dataframe
+        Dataframe of provider NHS trust level referall data.
+    - filters : Dictionary
+       Filters to be applied to provider NHS data.
+       As with filter_data function filters,  the following key words
+       should be used :
+           'start_month',
+           'end_month',
+            'standard',
+            'org',
+            'stage_or_route',
+            'treatment',
+            'cancer_type'.
+        Not all the filter keys need to be used.
+        If start_month is used the format should be start_month: 'M -YYYY'
+        If end_month is used the format should be end_month: 'M -YYYY'
+        For the other filters the format should be key: ['string', 'string']
+        with 'string' corresponding to the row value or values you would want
+        to include.
+        Only one standard should be compared.
+        The default is {'start_month':'05-2022','end_month':'05-2022',
+        'standard':'FDS'
+        - window_size : interger,
+        Window size for proportion of breaches moving average.
+        For example if window size is 3, the moving average will be taken every
+        3 months.
+        The default is 1.
 
-def prop_breaches_graph(df, filters={'start_month':'05-2022',
-                                     'end_month':'05-2022',
-                                     'standard':'FDS'}, window_size=1):
- # take the dataframe apply the filter function
+    Returns
+    -------
+    - A graph with proportion of breaches for a provider NHS trust(s) dataframe
+    compared to the moving average Nationally for the same standard.
+
+    """
+# take the dataframe apply the filter function
     df = filter_data(df, filters)
 # perform proportion_breaches function on the filtered dataset
     df = proportion_breaches(df, window_size)
@@ -92,8 +123,7 @@ def prop_breaches_graph(df, filters={'start_month':'05-2022',
     df_nat = df_nat.loc[(df_nat.index <= df.index[-1])]
 # run the proportion_breaches function on national data
     df_nat = proportion_breaches(df_nat, window_size)
-# A very basic plot would be better to inset your plot from previous function here
-# or alternatively I can update my plot to be neater
+# Plots the proportion of breaches
     x = df.index
     y = df['proportion_breaches']
     fig, ax = plt.subplots()
@@ -105,14 +135,16 @@ def prop_breaches_graph(df, filters={'start_month':'05-2022',
            title='Proportion of breaches over time')
     ax.grid()
     return fig, ax
-    
+
+
 def breaches_animated_plot(data, filters, window_size=5):
     """
     Create an animated plot with a moving average.
 
     Parameters:
     - data (pd.DataFrame): The input DataFrame containing the relevant columns.
-    - filters (list): A list of tuples specifying the filters to be applied to the data.
+    - filters (list): A list of tuples specifying the filters to be applied to 
+      the data.
     - window_size (int): The size of the moving average window.
 
     Returns:
@@ -129,10 +161,16 @@ def breaches_animated_plot(data, filters, window_size=5):
     fig = go.Figure()
 
     # Add a scatter plot for the proportion of breaches
-    fig.add_trace(go.Scatter(x=data['PERIOD'], y=data['PROPORTION_BREACHES'], mode='lines+markers', name='Proportion of Breaches'))
+    fig.add_trace(go.Scatter(x=data['PERIOD'],
+                             y=data['PROPORTION_BREACHES'],
+                             mode='lines+markers',
+                             name='Proportion of Breaches'))
 
     # Add a line plot for the moving average
-    fig.add_trace(go.Scatter(x=data['PERIOD'], y=data['MOVING_AVERAGE'], mode='lines', name=f'Moving Average (Window={window_size})'))
+    fig.add_trace(go.Scatter(x=data['PERIOD'],
+                             y=data['MOVING_AVERAGE'],
+                             mode='lines',
+                             name=f'Moving Average (Window={window_size})'))
 
     # Customize the layout
     fig.update_layout(
@@ -141,8 +179,10 @@ def breaches_animated_plot(data, filters, window_size=5):
         yaxis_title='Proportion of Breaches',
         hovermode='x',
         xaxis=dict(tickmode='array',
-                   tickvals=data['PERIOD'].astype(int) / 10**9,  # Convert datetime to timestamp in seconds
-                   ticktext=data['PERIOD'].dt.strftime('%b %Y'),  # Display months and years as tick labels
+                   # Convert datetime to timestamp in seconds
+                   tickvals=data['PERIOD'].astype(int) / 10**9,
+                   # Display months and years as tick labels
+                   ticktext=data['PERIOD'].dt.strftime('%b %Y'),
                    ),
         updatemenus=[dict(
             type='buttons',
@@ -150,9 +190,11 @@ def breaches_animated_plot(data, filters, window_size=5):
             buttons=[dict(
                 label='Play',
                 method='animate',
-                args=[None, dict(frame=dict(duration=500, redraw=True), fromcurrent=True)])
-            ])
-        ])
+                args=[None,
+                      dict(frame=dict(duration=500, redraw=True),
+                           fromcurrent=True)])
+                     ])
+                     ])
 
     # Create animation frames
     frames = [go.Frame(data=[go.Scatter(x=data['PERIOD'].iloc[:i + 1],
@@ -167,20 +209,19 @@ def breaches_animated_plot(data, filters, window_size=5):
     # Show the interactive plot
     fig.show()
 
-    
 def create_cmap(threshold=0.25):
     """
     Create a custom colormap with an inflection point.
 
     Parameters
     ----------
-    threshold : float, optional
+    - threshold : float, optional
         The threshold value at which the color transitions from green to red.
         Should be between 0 and 1. Default is 0.25.
 
     Returns
     -------
-    custom_cmap : matplotlib.colors.LinearSegmentedColormap
+    - custom_cmap : matplotlib.colors.LinearSegmentedColormap
         A custom colormap with an inflection point at the specified threshold.
         The colormap transitions from green to red below the threshold and
         includes additional colors above the threshold.
@@ -200,8 +241,11 @@ def create_cmap(threshold=0.25):
     <matplotlib.colors.LinearSegmentedColormap object at 0x...>
     """
     # Define colors for the colormap
-    colors_below_inflection = [(0.0, 0.7, 0.0, 1), (1.0, 0.85, 0.0, 1)]
-    colors_above_inflection = [(1.0, 0, 0, 0.5), (0.75, 0, 0, 1), (0.7, 0, 0.7, 1)]
+    colors_below_inflection = [(0.0, 0.7, 0.0, 1),
+                               (1.0, 0.85, 0.0, 1)]
+    colors_above_inflection = [(1.0, 0, 0, 0.5),
+                               (0.75, 0, 0, 1),
+                               (0.7, 0, 0.7, 1)]
 
     # Define where to change from green to red. This will change by standard
     inflection = threshold
@@ -213,7 +257,7 @@ def create_cmap(threshold=0.25):
     # Create the colormap using LinearSegmentedColormap
     cmap_below_inflection = LinearSegmentedColormap.from_list(
         'below_inflection', colors_below_inflection, N=num_colors_below_inflection
-    )
+     )
     
     cmap_above_inflection = LinearSegmentedColormap.from_list(
         'above_inflection', colors_above_inflection, N=num_colors_above_inflection
@@ -229,22 +273,20 @@ def create_cmap(threshold=0.25):
     custom_cmap = LinearSegmentedColormap.from_list(
         'custom_colormap', cmap_custom, N=256
     )
-    
+
     return custom_cmap
 
 def read_shapefile():
-    
     """
     Read and return a GeoDataFrame from an ONS shapefile for
         Integrated Care Boards (ICBs).
 
     Returns
     -------
-    gdf : GeoDataFrame
+    - gdf : GeoDataFrame
         A GeoDataFrame containing geographical information for ICBs.
 
     """
-    
     path_to_shapefile = ('canseer/data/ons_shapefile/'
                          + 'Integrated_Care_Boards_'
                          + 'April_2023_EN_BFC_1659257819249669363/')
@@ -257,16 +299,19 @@ def create_lookup_dict_icb():
 
     Returns
     -------
-    icb_code_to_names : dict
+    - icb_code_to_names : dict
         A dictionary mapping ICB 3-digit codes to ICB names.
-    org_to_hlhg : dict
-        A dictionary mapping NHS Trust organization codes to Higher Level Health Geography.
+    - org_to_hlhg : dict
+        A dictionary mapping NHS Trust organization codes to 
+        Higher Level Health Geography.
 
     Notes
     -----
     - The function reads ICB and SICB coding from an external source.
-    - It also retrieves a link between NHS Trust organization codes and Higher Level Health Geography.
-    - The resulting dictionaries provide easy lookup for ICB codes and organizational information.
+    - It also retrieves a link between NHS Trust organization codes 
+      and Higher Level Health Geography.
+    - The resulting dictionaries provide easy lookup for ICB codes 
+       and organizational information.
 
     Examples
     --------
@@ -281,7 +326,8 @@ def create_lookup_dict_icb():
     icb_code_to_names = dict(zip(icb_codes['ICB22CDH'], icb_codes['ICB22NM']))
 
     # Creates dictionary of NHS Trust Org code to Higher Level Health Geography
-    org_to_hlhg = dict(zip(nhs_link['ORG_CODE'], nhs_link['Higher Level Health Geography']))
+    org_to_hlhg = dict(zip(nhs_link['ORG_CODE'], 
+                           nhs_link['Higher Level Health Geography']))
 
     return icb_code_to_names, org_to_hlhg
 
@@ -295,12 +341,12 @@ def select_to_plot(data, gdf=None, filters=None, start_month='2022-04-01',
 
     Parameters
     ----------
-    data : DataFrame
+    - data : DataFrame
         The input DataFrame containing the data to be filtered and plotted.
-    gdf : GeoDataFrame, optional
+    - gdf : GeoDataFrame, optional
         The GeoDataFrame representing the geographical data
         for mapping. Default is None.
-    filters : dict, optional
+    - filters : dict, optional
         A dictionary of filters to apply.
         If provided, other filtering arguments ignored. Default is None.
     start_month : str, optional
@@ -315,7 +361,7 @@ def select_to_plot(data, gdf=None, filters=None, start_month='2022-04-01',
         The treatment modality for filtering data. Default is None.
     cancer_type : str, optional
         The cancer type for filtering data. Default is None.
-    return_filtered : bool, optional
+    - return_filtered : bool, optional
         If True, return the filtered DataFrame
             in addition to the mapped GeoDataFrame and labels.
             This can be useful for checking/more controls over data
@@ -323,15 +369,16 @@ def select_to_plot(data, gdf=None, filters=None, start_month='2022-04-01',
 
     Returns
     -------
-    result : tuple
+    - result : tuple
         A tuple containing the mapped GeoDataFrame, labels for plotting,
         and optionally, the filtered DataFrame.
 
     Notes
     -----
-    - If filters is provided, other filtering arguments are ignored.
-    - The function calculates proportions of breaches for each ICB23NM category.
-    - The GeoDataFrame is merged with the proportions of breaches based on ICB23NM.
+    - If filters is provided, other filtering arguments are ignored
+    - The function calculates proportions of breaches for each ICB23NM category
+    - The GeoDataFrame is merged with the proportions of breaches based on 
+    ICB23NM.
 
     Examples
     --------
@@ -455,25 +502,25 @@ def plot_icb_map(data, filters={'standard':'FDS'},
 
     Parameters
     ----------
-    data : DataFrame
+    - data : DataFrame
         DataFrame containing the necessary data for mapping.
-    filters : dict, optional
+    - filters : dict, optional
         Dictionary specifying filters for data selection.
         Defaults to {'standard': 'FDS'}. See filter_data()
-    figsize : tuple, optional
+    - figsize : tuple, optional
         Tuple specifying the figure size. Defaults to (7, 7).
-    dpi : int, optional
+    - dpi : int, optional
         Dots per inch for the figure resolution. Defaults to 300.
     edgecolor : str, optional
         Colour of the map boundaries. Defaults to 'black'.
-    lw : float, optional
+    - lw : float, optional
         Line width of the map boundaries. Defaults to 0.2.
 
     Returns
     -------
-    fig : matplotlib.figure.Figure
+    - fig : matplotlib.figure.Figure
         The created matplotlib Figure.
-    ax : matplotlib.axes._subplots.AxesSubplot
+    - ax : matplotlib.axes._subplots.AxesSubplot
         The created matplotlib AxesSubplot.
 
     Examples
@@ -522,7 +569,7 @@ def plot_icb_map(data, filters={'standard':'FDS'},
 
     ax.tick_params(axis='x', which='both', bottom=False,
                    top=False, labelbottom=False
-                  )
+                   )
     ax.tick_params(axis='y', which='both',
                    bottom=False, top=False, labelbottom=False
                   )
