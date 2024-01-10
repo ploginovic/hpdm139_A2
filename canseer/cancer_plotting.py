@@ -8,10 +8,10 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib.cm import ScalarMappable
 from matplotlib.colors import Normalize
 #from data_wrangling import select_data
-from data_wrangling import filter_data
-from data_wrangling import proportion_breaches
-from data_wrangling import get_national_28_day_standard, get_national__31_day_standard, get_national_62_day_standard
-from data_wrangling import read_icb_sicb_coding, nhs_code_link
+from canseer.data_wrangling import filter_data
+from canseer.data_wrangling import proportion_breaches
+from canseer.data_wrangling import get_national_28_day_standard, get_national__31_day_standard, get_national_62_day_standard
+from canseer.data_wrangling import read_icb_sicb_coding, nhs_code_link
 
 
 def plot_stacked_referrals(df, subgroups, labels, ncol, graph_title, y_label):
@@ -287,7 +287,7 @@ def read_shapefile():
         A GeoDataFrame containing geographical information for ICBs.
 
     """
-    path_to_shapefile = ('data/ons_shapefile/'
+    path_to_shapefile = ('canseer/data/ons_shapefile/'
                          + 'Integrated_Care_Boards_'
                          + 'April_2023_EN_BFC_1659257819249669363/')
     gdf = gpd.read_file(path_to_shapefile)
