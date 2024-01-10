@@ -1,4 +1,3 @@
-# Needs to be kept elsewhere
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -717,37 +716,64 @@ def filter_data(df, filters={}):
 #### Help ####
 
 
-def name_org_code(trust_name=None):
+def name_org_code(trust_name=None, print_dict=False):
     """
-    Provides org_code for each trust name 
-    
+    Provides the organization code for each trust name.
+
     Parameters
     ----------
-    - name : String,
-    The default is None, Name of trust.
+    trust_name : str, optional
+        The full name of the NHS Trust. Defaults to None.
+    print_dict : bool, optional
+        If True, prints the dictionary of names to organization codes. Defaults to False.
 
     Returns
     -------
-    - Organisation Code for that trust or if input is None printed
-    dictionary of all the Names to Organisation Codes.
+    str or dict or None
+        If trust_name is specified, returns the organization code for that trust.
+        If trust_name is None, prints a dictionary of all names to organization codes
+        and returns the dictionary. If trust_name is not found, returns None.
+
+    Notes
+    -----
+    - Trust names are case-insensitive.
+    - Trust names should match exactly for accurate organization code retrieval.
+
+    Examples
+    --------
+    >>> name_org_code('Manchester University Nhs Foundation Trust')
+    'R0A'
+    >>> name_org_code(print_dict=True)
+    South Tyneside And Sunderland Nhs Foundation Trust: R0B
+    University Hospitals Dorset Nhs Foundation Trust: R0D
+    ...
+    {'Manchester University Nhs Foundation Trust': 'R0A', ...}
 
     """
-    # read in file with Name and organisation code from the data folder
-    use_cols = ['Name', "Organisation Code"]
-    df = pd.read_csv(r"data/ods_data/geographic_etr.csv", usecols=use_cols)
-    # make the columns into a dictionary
+    # Read in file with Name and organization code from the data folder
+    use_cols = ['Name', 'Organisation Code']
+    df = pd.read_csv("canseer/data/ods_data/geographic_etr.csv", usecols=use_cols)
+
+    # Make the 'Name' column into camel case
+    df['Name'] = df['Name'].apply(lambda x: x.title())
+
+    # Create a dictionary of names to organization codes
     name_org_code_dict = df.set_index('Name')['Organisation Code'].to_dict()
-    # trust_name is upper case 
-    trust_name = trust_name.upper()
-    # if None input print the dictionary 
-    if trust_name is None:
-        print(name_org_code_dict)
-    # if trust_name not in dictionary print a message 
-    elif trust_name not in name_org_code_dict:
-        print("Trust name not in dictionary")
-    # print org_code corresponding to trust_name 
-    else:
-        print(name_org_code_dict[trust_name])
+
+    if trust_name is not None:
+        # Trust_name is case-insensitive
+        trust_name = trust_name.title()
+        if trust_name not in name_org_code_dict:
+            print("Trust name not in dictionary")
+            return None
+        return name_org_code_dict[trust_name]
+    elif trust_name is None:
+        # If None input, print the dictionary line by line if print_dict is True
+        if print_dict:
+            for name, org_code in name_org_code_dict.items():
+                print(f"{name}: {org_code}")
+        return name_org_code_dict
+
 
 def nhs_code_link():
     
