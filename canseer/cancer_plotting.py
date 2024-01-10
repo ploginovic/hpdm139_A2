@@ -62,15 +62,49 @@ def plot_stacked_referrals(df, subgroups, labels, ncol, graph_title, y_label):
     plt.title(graph_title)
     return fig, ax
 
-# ToDo for the functions below: display x-axis labels/ticks – currently not working/adding too many 
-# Add appropriate titles
-# Add national averages to compare with
-# Round the proportions displayed
+def prop_breaches_graph(df, filters={'start_month': '05-2022',
+                                     'end_month': '05-2022',
+                                     'standard': 'FDS'}, window_size=1):
+    """
+    Graph of proportion of breaches of filtered dataset compared to
+    moving average of national dataset
+    Parameters
+    ----------
+    - df : Dataframe
+        Dataframe of provider NHS trust level referall data.
+    - filters : Dictionary
+       Filters to be applied to provider NHS data.
+       As with filter_data function filters,  the following key words
+       should be used :
+           'start_month',
+           'end_month',
+            'standard',
+            'org',
+            'stage_or_route',
+            'treatment',
+            'cancer_type'.
+        Not all the filter keys need to be used.
+        If start_month is used the format should be start_month: 'M -YYYY'
+        If end_month is used the format should be end_month: 'M -YYYY'
+        For the other filters the format should be key: ['string', 'string']
+        with 'string' corresponding to the row value or values you would want
+        to include.
+        Only one standard should be compared.
+        The default is {'start_month':'05-2022','end_month':'05-2022',
+        'standard':'FDS'
+        - window_size : interger,
+        Window size for proportion of breaches moving average.
+        For example if window size is 3, the moving average will be taken every
+        3 months.
+        The default is 1.
 
-def prop_breaches_graph(df, filters={'start_month':'05-2022',
-                                     'end_month':'05-2022',
-                                     'standard':'FDS'}, window_size=1):
- # take the dataframe apply the filter function
+    Returns
+    -------
+    - A graph with proportion of breaches for a provider NHS trust(s) dataframe
+    compared to the moving average Nationally for the same standard.
+
+    """
+# take the dataframe apply the filter function
     df = filter_data(df, filters)
 # perform proportion_breaches function on the filtered dataset
     df = proportion_breaches(df, window_size)
@@ -89,8 +123,7 @@ def prop_breaches_graph(df, filters={'start_month':'05-2022',
     df_nat = df_nat.loc[(df_nat.index <= df.index[-1])]
 # run the proportion_breaches function on national data
     df_nat = proportion_breaches(df_nat, window_size)
-# A very basic plot would be better to inset your plot from previous function here
-# or alternatively I can update my plot to be neater
+# Plots the proportion of breaches
     x = df.index
     y = df['proportion_breaches']
     fig, ax = plt.subplots()
@@ -102,7 +135,8 @@ def prop_breaches_graph(df, filters={'start_month':'05-2022',
            title='Proportion of breaches over time')
     ax.grid()
     return fig, ax
-    
+
+
 def breaches_animated_plot(data, filters, window_size=5):
     """
     Create an animated plot with a moving average.
