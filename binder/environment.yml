@@ -2,11 +2,12 @@ name: canseer_dev
 channels:
   - defaults
 dependencies:
-  - python==3.11.6
-  - numpy=1.25.0
+  - python=3.8.12
+  - numpy=1.23.2
   - conda=23.11.0
-  - matplotlib
-  - plotly
-  - jupyterlab
-  - seaborn
-  - geopandas
+  - matplotlib=3.5.3
+  - plotly=5.18.0
+  - jupyterlab=3.4.6
+  - seaborn=0.13.0
+  - geopandas=0.13.2
+  - openpyxl=3.1.2
