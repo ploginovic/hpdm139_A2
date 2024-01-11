@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="canseer",
-    version="0.1.0",
+    version="0.1.2",
     description="A Python package simplifying workflow with NHS Cancer data",
     packages=find_packages(),
     classifiers=[

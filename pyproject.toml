@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "canseer"
 version = "0.1.2"
 description = "A short description of your package"
-long_description = "Canseer is a toolkit which allows the user to analyse data from NHS statistics on adherence to cancer diagnosis standards. The data can be downloaded,filtered, and visualised. There are different tools which can be employed to visualise the data, to display both trends over time and geographical variation. The 'Canseer' package leverages multiple sources of NHS data, and allows seamless and flexible visualisation of NHS cancer targets on a map."
+readme = "README.md"
 authors = ["Coding_for_machine_learning_GroupSMP <p.loginovic@gmail.com>"]
 
 [tool.poetry.dependencies]
