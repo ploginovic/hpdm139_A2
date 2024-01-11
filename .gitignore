@@ -3,3 +3,5 @@
 
 #Jupyter notebook files
 *.ipynb_checkpoints
+
+*.DS_store
