@@ -5,6 +5,12 @@
 ### Canseer 0.1.3 is available on PyPI: https://pypi.org/project/canseer/
 pip install canseer
 
+## Binder
+### The user_guide.ipynb can be run on the Jupyter server through Binder. To access this, click on the logo.
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ploginovic/hpdm139_A2.git/HEAD)
+
+
+
 # Description 
 Canseer is a toolkit which allows the user to analyse data from NHS statistics on adherence to cancer diagnosis standards. The data can be downloaded, presented in dataframe and filtered through our data wrangling functions. There are different tools which can be employed to visualise the data, displaying both trends over time and geographical variation.
 The 'Canseer'package leverages multiple sources of NHS data, and allows seamless and flexible visualisation of NHS cancer targets on a map.
