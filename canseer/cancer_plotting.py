@@ -92,14 +92,15 @@ def prop_breaches_graph(df, filters={'start_month': '05-2022',
         The default is {'start_month':'05-2022','end_month':'05-2022',
         'standard':'FDS'
       - labels - list 
-        labels of dataset the first corresponds to the filtered dataframe the second the 
-        National dataframe. 
+        labels of dataset the first corresponds to the filtered dataframe
+        the second the National dataframe. 
         for example labels = ['Referrals for DTT for surgery from RDE', 
                               'National DTT standard']
 
     Returns
     -------
-    - A graph with proportion of breaches for a provider NHS trust(s) dataframe
+    - Touple (matplotlib.figure.Figure, matplotlib.axes) A graph with
+    proportion of breaches for a provider NHS trust(s) dataframe
     compared to the proportion of breaches nationally for the same standard.
 
     """
@@ -142,9 +143,8 @@ def breaches_animated_plot(data, filters, window_size=5):
     Create an animated plot with a moving average.
 
     Parameters:
-    - data (pd.DataFrame): The input DataFrame containing the relevant columns.
-    - filters (list): A list of tuples specifying the filters to be applied to 
-      the data.
+    - data (pd.DataFrame): Input DataFrame containing relevant columns.
+    - filters (list): A list of tuples specifying filters to be applied.
     - window_size (int): The size of the moving average window.
 
     Returns:
