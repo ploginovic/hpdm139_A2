@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: canseer
+Version: 0.1.0
+Summary: A Python package simplifying workflow with NHS Cancer data
+Home-page: https://github.com/ploginovic/hpdm139_A2
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Topic :: Healthcare/Medicine
+Classifier: License :: OSI Approved :: MIT License
+Requires-Python: >=3.6

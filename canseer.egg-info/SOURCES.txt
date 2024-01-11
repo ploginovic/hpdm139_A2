@@ -1,0 +1,6 @@
+README.md
+setup.py
+canseer.egg-info/PKG-INFO
+canseer.egg-info/SOURCES.txt
+canseer.egg-info/dependency_links.txt
+canseer.egg-info/top_level.txt

@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools >= 40.9.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.poetry]
+name = "canseer"
+version = "0.1.1"
+description = "Canseer is a toolkit which allows the user to analyse data from NHS statistics on adherence to cancer diagnosis standards. The data can be downloaded,filtered, and visualised. There are different tools which can be employed to visualise the data, to display both trends over time and geographical variation. The 'Canseer' package leverages multiple sources of NHS data, and allows seamless and flexible visualisation of NHS cancer targets on a map."
+authors = ["Coding_for_machine_learning_GroupSMP <p.loginovic@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+numpy = "^1.23.2"
+matplotlib = "^3.5.3"
+plotly = "^5.18.0"
+jupyterlab = "^3.4.6"
+seaborn = "^0.13.0"
+geopandas = "^0.13.2"
+openpyxl = "^3.1.2"
