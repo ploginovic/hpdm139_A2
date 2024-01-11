@@ -1,6 +1,10 @@
 # hpdm139_A
 # CANSEER 
 
+## Installation 
+### Canseer 0.1.1 is available on PyPI
+pip install canseer
+
 # Description 
 Canseer is a toolkit which allows the user to analyse data from NHS statistics on adherence to cancer diagnosis standards. The data can be downloaded, presented in dataframe and filtered using our data wrangling functions. There are different tools which can be employed to visualise the data, to display both trends over time and geographical variation.
 The 'Canseer'package leverages multiple sources of NHS data, and allows seamless and flexible visualisation of NHS cancer targets on a map.
@@ -24,9 +28,6 @@ Provider (NHS Trust) data - https://www.england.nhs.uk/statistics/wp-content/upl
 This toolkit also uses data provided by the ONS to link NHS trust regions to geographical areas and a map (shapefile format) of Integrated Care Boards (ICBs); to supply organatisation codes for each NHS trust.
 
 Office for National Statistics Data - https://www.ons.gov.uk/methodology/geography/ukgeographies/healthgeography
-
-# Installation 
-
  
 
 # User guide 
