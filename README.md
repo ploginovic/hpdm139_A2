@@ -2,7 +2,7 @@
 # CANSEER 
 
 ## Installation 
-### Canseer 0.1.2 is available on PyPI: https://pypi.org/project/canseer/
+### Canseer 0.1.3 is available on PyPI: https://pypi.org/project/canseer/
 pip install canseer
 
 # Description 
