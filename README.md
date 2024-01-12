@@ -1,7 +1,7 @@
-# hpdm139_A
+# hpdm139_Assesment_2
 # CANSEER 
 
-## Installation 
+## Installation [![PyPI version](https://badge.fury.io/py/canseer.svg)](https://badge.fury.io/py/canseer)
 ### Canseer 0.1.3 is available on PyPI: https://pypi.org/project/canseer/
 pip install canseer
 
