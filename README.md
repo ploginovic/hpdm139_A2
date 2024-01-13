@@ -6,7 +6,7 @@
 pip install canseer
 
 ## Binder [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ploginovic/hpdm139_A2/HEAD?labpath=user_guide.ipynb)
-# Alternatively, the user_guide.ipynb notebook can be run on the Jupyter server through Binder. To access this, click on the logo above.
+## Alternatively, the user_guide.ipynb notebook can be run on the Jupyter server through Binder. To access this, click on the logo above.
 Depending on how you want to use the Notebook, 'Run All' can be selected for a complete demonstration of the package, or selected cells can be run.
 
 <img width="513" alt="Screenshot 2024-01-13 at 10 22 52" src="https://github.com/ploginovic/hpdm139_A2/assets/90516111/958372a8-60b0-4468-a5fb-78216893c6c9">
