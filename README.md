@@ -6,7 +6,7 @@
 pip install canseer
 
 ## Binder
-### The user_guide.ipynb can be run on the Jupyter server through Binder. To access this, click on the logo.
+Alternatively, the user_guide.ipynb notebook can be run on the Jupyter server through Binder. To access this, click on the logo.
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ploginovic/hpdm139_A2.git/HEAD)
 
 
